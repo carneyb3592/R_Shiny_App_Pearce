@@ -1,0 +1,45 @@
+#
+# This is the user-interface definition of a Shiny web application. You can
+# run the application by clicking 'Run App' above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+library(shiny)
+
+
+shinyUI(
+  navbarPage("App",
+             tabPanel("Home",
+                      "This is a home page"),
+             navbarMenu("Data",
+               tabPanel("Upload",
+                            fileInput("file1", "Choose CSV File",
+                                      accept = c(
+                                        "text/csv",
+                                        "text/comma-separated-values,text/plain",
+                                        ".csv")
+                            ),
+                            tags$hr(),
+                            checkboxInput("header", "Header", TRUE)
+                ),
+               tabPanel("View Data",
+                        mainPanel(
+                          tableOutput("contents")
+                        ))
+            ),
+             tabPanel("Graph",
+                    titlePanel("Cool Graph"),
+                      
+                      # Sidebar with a slider input for number of bins
+                      
+                        
+                        # Show a plot of the generated distribution
+                        
+                          plotOutput("distPlot")
+                      ),
+   
+  )
+)
