@@ -9,37 +9,38 @@
 
 library(shiny)
 
+###########  UI ELEMENTS ##################
+source("ui/homeUI.R",local=T)
+source("ui/dataUI.R",local=T)
+source("ui/MBUI.R",local=T)
+
+
+###########################################
+
 
 shinyUI(
   navbarPage("App",
-             tabPanel("Home",
-                      "This is a home page"),
-             navbarMenu("Data",
-               tabPanel("Upload",
-                            fileInput("file1", "Choose CSV File",
-                                      accept = c(
-                                        "text/csv",
-                                        "text/comma-separated-values,text/plain",
-                                        ".csv")
-                            ),
-                            tags$hr(),
-                            checkboxInput("header", "Header", TRUE)
-                ),
-               tabPanel("View Data",
-                        mainPanel(
-                          tableOutput("contents")
-                        ))
-            ),
-             tabPanel("Graph",
-                    titlePanel("Cool Graph"),
-                      
-                      # Sidebar with a slider input for number of bins
-                      
-                        
-                        # Show a plot of the generated distribution
-                        
-                          plotOutput("distPlot")
-                      ),
-   
+             homeUI,
+             dataUI,
+             MBUI
   )
 )
+
+
+
+#navbarMenu("Data",
+#tabPanel("Upload",
+#         fileInput("file1", "Choose CSV File",
+#                   accept = c(
+#                     "text/csv",
+#                     "text/comma-separated-values,text/plain",
+#                     ".csv")
+#         ),
+#         tags$hr(),
+#         checkboxInput("header", "Header", TRUE)
+#),
+#tabPanel("View Data",
+#         mainPanel(
+#           tableOutput("contents")
+#         ))
+#)
