@@ -8,8 +8,13 @@
 #
 
 library(shiny)
+library(rankrate)
 library(ggplot2)
+library(reshape2)
+library(toOrdinal)
+library(highcharter)
 # Define server logic required to draw a histogram
 function(input, output, session) {
     source("server/dataServer.R",local=T)
+
 }
