@@ -8,7 +8,6 @@
 #
 
 library(shiny)
-
 ###########  UI ELEMENTS ##################
 source("ui/homeUI.R",local=T)
 source("ui/dataUI.R",local=T)

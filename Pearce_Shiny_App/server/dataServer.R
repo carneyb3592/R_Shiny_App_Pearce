@@ -49,36 +49,82 @@ output$distPlot2 <- renderPlot({
   
 })
 
-dataTable <- reactive({
-  req(input$file1)
+dataTableRankings <- reactive({
+  req(input$file)
   sessionEnvir <- sys.frame()
-  if (!is.null(input$file1)){
+  if (!is.null(input$RankingsFile)){
     tmp_env <- new.env()
-    p <- load(input$file1$datapath, tmp_env)
-    if(length(p)==1)
-      p <- tmp_env[[p]]
+    Data <- load(input$RankingsFile$datapath, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
     else
-      p <- NULL
+      Data <- NULL
+  }
+  else if(!is.null(input$file)) {
+    tmp_env <- new.env()
+    fileName <- paste(input$file,".RData",sep = "")
+    myfile <- file.path("server",fileName)
+    Data <- load(myfile, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
+    else
+      Data <- NULL
     
   }
-  p
+  Data
+  
+})
+dataTableRatings <- reactive({
+  req(input$file)
+  sessionEnvir <- sys.frame()
+  if (!is.null(input$RatingsFile)){
+    tmp_env <- new.env()
+    Data <- load(input$RatingsFile$datapath, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
+    else
+      Data <- NULL
+  }
+  else if(!is.null(input$file)) {
+    tmp_env <- new.env()
+    fileName <- paste(input$file,".RData",sep = "")
+    myfile <- file.path("server",fileName)
+    Data <- load(myfile, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
+    else
+      Data <- NULL
+    
+  }
+  Data
+  
 })
 
 Ratings <- reactive({
-  req(input$file1)
+  req(input$file)
   sessionEnvir <- sys.frame()
-  if (!is.null(input$file1)){
+  if (!is.null(input$RankingsFile)){
     tmp_env <- new.env()
-    ToyData <- load(input$file1$datapath, tmp_env)
-    if(length(ToyData)==1)
-      ToyData <- tmp_env[[ToyData]]
+    Data <- load(input$RankingsFile$datapath, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
     else
-      ToyData <- NULL
-      
+      Data <- NULL
   }
-  ratings <- ToyData$ratings
-  rankings <- ToyData$rankings
-  M <- ToyData$M #this is the "max" score, which the user should input too!
+  else if(!is.null(input$file)) {
+    tmp_env <- new.env()
+    fileName <- paste(input$file,".RData",sep = "")
+    myfile <- file.path("server",fileName)
+    Data <- load(myfile, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
+    else
+      Data <- NULL
+    
+  }
+  ratings <- Data$ratings
+  rankings <- Data$rankings
+  M <- Data$M #this is the "max" score, which the user should input too!
   
   ## Simple EDA
   I <- nrow(ratings)
@@ -90,27 +136,38 @@ Ratings <- reactive({
   ratings_long$Judge <- factor(ratings_long$Judge)
   ratings_long$Proposal <- factor(ratings_long$Proposal)
   
-  p <- ggplot(ratings_long,aes(Proposal,Rating))+
+  g <- ggplot(ratings_long,aes(Proposal,Rating))+
     theme_bw(base_size=15)+geom_boxplot()+ylim(c(0,M))+
     ggtitle("Ratings by Proposal",paste0("0 = best; ",M," = worst"))+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  p
+  g
 })
 
 Rankings <- reactive({
-  req(input$file1)
+  req(input$file)
   sessionEnvir <- sys.frame()
-  if (!is.null(input$file1)){
+  if (!is.null(input$RankingsFile)){
     tmp_env <- new.env()
-    ToyData <- load(input$file1$datapath, tmp_env)
-    if(length(ToyData)==1)
-      ToyData <- tmp_env[[ToyData]]
+    Data <- load(input$RankingsFile$datapath, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
     else
-      ToyData <- NULL
+      Data <- NULL
   }
-  ratings <- ToyData$ratings
-  rankings <- ToyData$rankings
-  M <- ToyData$M #this is the "max" score, which the user should input too!
+  else if(!is.null(input$file)) {
+    tmp_env <- new.env()
+    fileName <- paste(input$file,".RData",sep = "")
+    myfile <- file.path("server",fileName)
+    Data <- load(myfile, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
+    else
+      Data <- NULL
+    
+  }
+  ratings <- Data$ratings
+  rankings <- Data$rankings
+  M <- Data$M #this is the "max" score, which the user should input too!
   
   ## Simple EDA
   I <- nrow(ratings)
@@ -122,30 +179,41 @@ Rankings <- reactive({
   rankings_long$Place <- factor(rankings_long$Place,levels=R:1,labels=toOrdinal(R:1))
   colfunc<-colorRampPalette(c("lightgray","black"))
   
-  p <- ggplot(rankings_long,aes(Proposal,fill=Place))+
+  g <- ggplot(rankings_long,aes(Proposal,fill=Place))+
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
     guides(fill = guide_legend(reverse = TRUE))+
     scale_fill_manual(values=colfunc(max(rankings)))+ylab("Count")+
     theme(panel.grid = element_blank(),legend.position = "bottom")
-  p
+  g
 })
 
 
 Inconsistencies <- reactive({
-  req(input$file1)
+  req(input$file)
   sessionEnvir <- sys.frame()
-  if (!is.null(input$file1)){
+  if (!is.null(input$RankingsFile)){
     tmp_env <- new.env()
-    ToyData <- load(input$file1$datapath, tmp_env)
-    if(length(ToyData)==1)
-      ToyData <- tmp_env[[ToyData]]
+    Data <- load(input$RankingsFile$datapath, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
     else
-      ToyData <- NULL
+      Data <- NULL
   }
-  ratings <- ToyData$ratings
-  rankings <- ToyData$rankings
-  M <- ToyData$M #this is the "max" score, which the user should input too!
+  else if(!is.null(input$file)) {
+    tmp_env <- new.env()
+    fileName <- paste(input$file,".RData",sep = "")
+    myfile <- file.path("server",fileName)
+    Data <- load(myfile, tmp_env)
+    if(length(Data)==1)
+      Data <- tmp_env[[Data]]
+    else
+      Data <- NULL
+    
+  }
+  ratings <- Data$ratings
+  rankings <- Data$rankings
+  M <- Data$M #this is the "max" score, which the user should input too!
   
   ## Simple EDA
   I <- nrow(ratings)
@@ -164,16 +232,19 @@ Inconsistencies <- reactive({
     }}
     consistency[i,2] <- kendall
   }
-  p <- ggplot(consistency,aes(x=Kendall))+
+  g <- ggplot(consistency,aes(x=Kendall))+
     theme_bw(base_size=15)+geom_histogram()+
     xlim(c(-.1,max(consistency$Kendall)+.1))+
     xlab("Number of Inconsistent Item Pairs")+ylab("Count")+
     ggtitle("Inconsistency Between Ratings and Rankings")+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  p
+  g
 })
-output$dataT <- renderTable(
-  dataTable()
+output$dataTableRank <- renderTable(
+  dataTableRankings()
+)
+output$dataTableRate <- renderTable(
+  dataTableRatings()
 )
 output$RatingsPlot <- renderPlot(
   Ratings()
@@ -185,4 +256,9 @@ output$RankingsPlot <- renderPlot(
 
 output$InconsistenciesPlot <- renderPlot(
   Inconsistencies()
+)
+
+
+output$RankingsText <- renderText(
+ input$RatingsMValue
 )
