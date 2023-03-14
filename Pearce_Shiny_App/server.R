@@ -13,8 +13,9 @@ library(ggplot2)
 library(reshape2)
 library(toOrdinal)
 library(highcharter)
+library(shinycssloaders)
 # Define server logic required to draw a histogram
 function(input, output, session) {
     source("server/dataServer.R",local=T)
-
+    source("server/MB.R",local=T)
 }

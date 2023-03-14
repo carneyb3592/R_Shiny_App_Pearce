@@ -11,7 +11,7 @@ dataUI <- tabPanel("Data",
                                 selectInput(
                                   "file",
                                   "Example file:",
-                                  choices = c("ToyData","Other")
+                                  choices = c("Select Input data...","ToyData","ToyData2","Other")
                                 ),
                                 tags$hr(),
                                 h2("Upload Your Own Data"),
@@ -66,7 +66,7 @@ dataUI <- tabPanel("Data",
                                   and one column per proposal, such that the (i,j) entry contains the rating assigned 
                                   by reviewer i to proposal j. Ratings must be integer-valued, where ",strong("0 = best rating"),"
                                   and ",strong("M = worst rating.")," The maximum score M can be inputted manually below."),
-                                fileInput("RantingsFile", "Choose Ratings File",
+                                fileInput("RatingsFile", "Choose Ratings File",
                                         accept = c(
                                           "text/csv",
                                           "text/comma-separated-values,text/plain",
@@ -96,7 +96,8 @@ dataUI <- tabPanel("Data",
                                     )
                                   )
                                   
-                                )
+                                ),
+                                actionButton("go","Go!", width = "150px", height= "100px", style="color: white; background-color: green; float: right")
                               ),
                      tabPanel("Summary",
                               h2("Rankings"),
@@ -108,7 +109,7 @@ dataUI <- tabPanel("Data",
                             ),
                      tabPanel("EDA",
                               h2("Exploratory Data Analysis"),
-                              p("he following three plots visually summarize the rankings and ratings independently, as well as calculate the internal consistency of each reviewer."),
+                              p("The following three plots visually summarize the rankings and ratings independently, as well as calculate the internal consistency of each reviewer."),
                               sidebarLayout(position = "left",
                                 sidebarPanel(
                                   h3("Ratings Figure"),
@@ -119,7 +120,7 @@ dataUI <- tabPanel("Data",
                                     Hover over each bar for more information.")
                                 ),
                                 mainPanel(
-                                  plotOutput("RatingsPlot")
+                                  shinycssloaders::withSpinner(plotOutput("RatingsPlot"))
                                 )
                               ),
                               sidebarLayout(position = "left",
@@ -132,7 +133,7 @@ dataUI <- tabPanel("Data",
                                   
                                 ),
                                 mainPanel(
-                                  plotOutput("RankingsPlot")
+                                  shinycssloaders::withSpinner(plotOutput("RankingsPlot"))
                                 )
                               ),
                               sidebarLayout(position = "left",
@@ -145,7 +146,7 @@ dataUI <- tabPanel("Data",
                                     based on the ratings or rankings (e.g., due to missing data or rating ties).")
                                 ),
                                 mainPanel(
-                                  plotOutput("InconsistenciesPlot")
+                                  shinycssloaders::withSpinner(plotOutput("InconsistenciesPlot"))
                                 )
                               )
                    )

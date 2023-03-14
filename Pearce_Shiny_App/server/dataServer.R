@@ -1,115 +1,60 @@
-output$contents1 <- renderTable({
-  # input$file1 will be NULL initially. After the user selects
-  # and uploads a file, it will be a data frame with 'name',
-  # 'size', 'type', and 'datapath' columns. The 'datapath'
-  # column will contain the local filenames where the data can
-  # be found.
-  inFile <- input$file1
-  
-  if (is.null(inFile))
-    return(NULL)
-  
-  read.csv(inFile$datapath, header = input$header)
-})
-
-output$contents2 <- renderTable({
-  # input$file1 will be NULL initially. After the user selects
-  # and uploads a file, it will be a data frame with 'name',
-  # 'size', 'type', and 'datapath' columns. The 'datapath'
-  # column will contain the local filenames where the data can
-  # be found.
-  inFile <- input$file2
-  
-  if (is.null(inFile))
-    return(NULL)
-  
-  read.csv(inFile$datapath, header = input$header)
-})
-
-output$distPlot1 <- renderPlot({
-  
-  # generate bins based on input$bins from ui.R
-  inFile <- input$file1
-  if (is.null(inFile))
-    return(NULL)
-  ex_data <- read.csv(inFile$datapath, header = input$header)
-  
-  ggplot(data=ex_data, mapping= aes(x=Year, y=Value)) + geom_line()
-  
-})
-output$distPlot2 <- renderPlot({
-  
-  # generate bins based on input$bins from ui.R
-  inFile <- input$file2
-  if (is.null(inFile))
-    return(NULL)
-  ex_data <- read.csv(inFile$datapath, header = input$header)
-  
-  ggplot(data=ex_data, mapping= aes(x=Year, y=Value)) + geom_line()
-  
-})
-
-dataTableRankings <- reactive({
+dataTableRankings <- eventReactive(input$go,{
   req(input$file)
   sessionEnvir <- sys.frame()
   if (!is.null(input$RankingsFile)){
-    tmp_env <- new.env()
-    Data <- load(input$RankingsFile$datapath, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
+    Data <- read.csv(input$RankingsFile$datapath)
   }
   else if(!is.null(input$file)) {
     tmp_env <- new.env()
     fileName <- paste(input$file,".RData",sep = "")
     myfile <- file.path("server",fileName)
     Data <- load(myfile, tmp_env)
-    if(length(Data)==1)
+    if(length(Data)==1){
       Data <- tmp_env[[Data]]
+      Data <- Data$rankings
+    }
     else
       Data <- NULL
     
   }
   Data
-  
 })
-dataTableRatings <- reactive({
+
+
+
+dataTableRatings <- eventReactive(input$go,{
   req(input$file)
   sessionEnvir <- sys.frame()
   if (!is.null(input$RatingsFile)){
-    tmp_env <- new.env()
-    Data <- load(input$RatingsFile$datapath, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
+    Data <- read.csv(input$RatingsFile$datapath)
   }
   else if(!is.null(input$file)) {
     tmp_env <- new.env()
     fileName <- paste(input$file,".RData",sep = "")
     myfile <- file.path("server",fileName)
     Data <- load(myfile, tmp_env)
-    if(length(Data)==1)
+    if(length(Data)==1){
       Data <- tmp_env[[Data]]
+      Data <- Data$rankings
+    }
     else
       Data <- NULL
     
   }
   Data
-  
 })
 
-Ratings <- reactive({
+
+
+
+
+Ratings <- eventReactive(input$go,{
   req(input$file)
   sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile)){
-    tmp_env <- new.env()
-    Data <- load(input$RankingsFile$datapath, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
+  if (!is.null(input$RankingsFile) && !is.null(input$RatingsFile)){
+    ratings = read.csv(input$RatingsFile$datapath)
+    rankings = read.csv(input$RankingsFile$datapath)
+    M <- input$RatingsMValue
   }
   else if(!is.null(input$file)) {
     tmp_env <- new.env()
@@ -121,11 +66,11 @@ Ratings <- reactive({
     else
       Data <- NULL
     
+    ratings <- Data$ratings
+    rankings <- Data$rankings
+    M <- Data$M
   }
-  ratings <- Data$ratings
-  rankings <- Data$rankings
-  M <- Data$M #this is the "max" score, which the user should input too!
-  
+  #this is the "max" score, which the user should input too!
   ## Simple EDA
   I <- nrow(ratings)
   J <- ncol(ratings)
@@ -143,7 +88,11 @@ Ratings <- reactive({
   g
 })
 
-Rankings <- reactive({
+
+
+
+
+Rankings <- eventReactive(input$go,{
   req(input$file)
   sessionEnvir <- sys.frame()
   if (!is.null(input$RankingsFile)){
@@ -189,7 +138,9 @@ Rankings <- reactive({
 })
 
 
-Inconsistencies <- reactive({
+
+
+Inconsistencies <- eventReactive(input$go,{
   req(input$file)
   sessionEnvir <- sys.frame()
   if (!is.null(input$RankingsFile)){
@@ -240,6 +191,13 @@ Inconsistencies <- reactive({
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   g
 })
+
+
+
+
+
+
+
 output$dataTableRank <- renderTable(
   dataTableRankings()
 )
