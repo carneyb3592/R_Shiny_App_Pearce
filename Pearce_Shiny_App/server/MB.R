@@ -15,6 +15,11 @@ MB <- eventReactive(input$plot,{
   
   if(input$MBEstimationMethod == "exact"){
     point_estimate <- fit_mb(Pi=rankings,X=ratings,M=M,method="ASTAR")
+  } else {
+    point_estimate <- fit_mb(Pi=rankings,X=ratings,M=M,method="Greedy")
+  }
+  
+  if(input$CI_Included == "yes") {
     ci <- ci_mb(Pi=rankings,X=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="ASTAR")
     results_p <- data.frame(Proposal=1:J,PointEstimate=point_estimate$p,
                             LowerLimit=unlist(ci$ci[1,1:J]),UpperLimit=unlist(ci$ci[2,1:J]))
@@ -24,19 +29,16 @@ MB <- eventReactive(input$plot,{
       ylim(c(0,1))+ylab("Estimated Quality")+
       ggtitle("Point Estimates and 95% CI of Quality","Exact Estimation Algorithm")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  } else {
-    point_estimate <- fit_mb(Pi=rankings,X=ratings,M=M,method="Greedy")
-    ci <- ci_mb(Pi=rankings,X=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="Greedy")
-    results_p <- data.frame(Proposal=1:J,PointEstimate=point_estimate$p,
-                            LowerLimit=unlist(ci$ci[1,1:J]),UpperLimit=unlist(ci$ci[2,1:J]))
     
-    g <- ggplot(results_p,aes(Proposal,y=PointEstimate,ymin=LowerLimit,ymax=UpperLimit))+
-      theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
+  } else {
+    results_p <- data.frame(Proposal=1:J,PointEstimate=point_estimate$p)
+    
+    g <- ggplot(results_p,aes(Proposal,y=PointEstimate))+
+      theme_bw(base_size=15)+geom_point(size=3)+
       ylim(c(0,1))+ylab("Estimated Quality")+
-      ggtitle("Point Estimates and 95% CI of Quality","Approximate Estimation Algorithm")+
+      ggtitle("Point Estimates and 95% CI of Quality","Exact Estimation Algorithm")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   }
-  
   g
 })
 
