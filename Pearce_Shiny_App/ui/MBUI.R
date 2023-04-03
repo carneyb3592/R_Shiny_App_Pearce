@@ -8,26 +8,26 @@ MBUI <- tabPanel("MB",
                    column(
                      2,
                      radioButtons(
-                       label = "Estimation Method",
+                       label = htmlOutput("EstimationWarningText"),
                        inputId = "MBEstimationMethod",
                        choices = c(
                          "Exact"= "exact",
                          "Approximate" = "approximate"
                        ),
-                       selected = "exact"
+                       selected = "approximate"
                      )
                      
                    ),
                    column(
                      2,
                      radioButtons(
-                       label = "Include C.I.?",
+                       label = htmlOutput("CIWarningText"),
                        inputId = "CI_Included",
                        choices = c(
                          "Yes" = "yes",
                          "No" = "no"
                        ),
-                       selected = "yes"
+                       selected = "no"
                      )
                    ),
                    column(

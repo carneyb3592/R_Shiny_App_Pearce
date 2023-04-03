@@ -18,4 +18,5 @@ library(shinycssloaders)
 function(input, output, session) {
     source("server/dataServer.R",local=T)
     source("server/MB.R",local=T)
+    source("server/dataUpload.R", local=T)
 }

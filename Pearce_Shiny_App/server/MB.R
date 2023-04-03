@@ -1,32 +1,12 @@
 MB <- eventReactive(input$plot,{
-  req(input$file)
-  req(input$MBEstimationMethod)
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile) && !is.null(input$RatingsFile)){
-    ratings = read.csv(input$RatingsFile$datapath)
-    rankings = read.csv(input$RankingsFile$datapath)
-    M <- input$RatingsMValue
-  }
-  else if(!is.null(input$file)) {
-    tmp_env <- new.env()
-    fileName <- paste(input$file,".RData",sep = "")
-    myfile <- file.path("server",fileName)
-    Data <- load(myfile, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
-    
-    ratings <- Data$ratings
-    rankings <- Data$rankings
-    M <- Data$M
-  }
+  rankings <- reactive_data$Rankings
+  ratings <- reactive_data$Ratings
+  M <- reactive_data$M
   #this is the "max" score, which the user should input too!
   ## Simple EDA
   I <- nrow(ratings)
   J <- ncol(ratings)
   R <- ncol(rankings)
-  
   
   ratings_long <- melt(ratings)
   names(ratings_long) <- c("Judge","Proposal","Rating")
@@ -64,3 +44,19 @@ MB <- eventReactive(input$plot,{
 output$MallowsBinomial <- renderPlot(
   MB()
 )
+
+output$EstimationWarningText <- renderText({
+  if(input$MBEstimationMethod == "exact"){
+    HTML("Estimation Method <p style='color:red;'> (Warning, running an exact estimation may take a while)</p>")
+  } else {
+    HTML("Estimation Method")
+  }
+})
+
+output$CIWarningText <- renderText({
+  if(input$CI_Included == "yes"){
+    HTML("Include C.I.? <p style='color:red;'> (Warning, including a confidence interval will significanty add to the time.)</p>")
+  } else {
+    HTML("Include C.I.?")
+  }
+})

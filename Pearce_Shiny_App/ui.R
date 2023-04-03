@@ -8,6 +8,8 @@
 #
 
 library(shiny)
+require(shinyjs)
+
 ###########  UI ELEMENTS ##################
 source("ui/homeUI.R",local=T)
 source("ui/dataUI.R",local=T)

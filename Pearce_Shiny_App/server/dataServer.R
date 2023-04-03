@@ -1,80 +1,59 @@
-dataTableRankings <- eventReactive(input$go,{
-  req(input$file)
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile)){
-    Data <- read.csv(input$RankingsFile$datapath)
-  }
-  else if(!is.null(input$file)) {
+reactive_data <- reactiveValues()
+reactive_data$Rankings = NULL
+reactive_data$Ratings = NULL
+reactive_data$M = NULL
+
+observeEvent(c(input$toyfile, csvdata_status$unloaded == 1),{
+  if(csvdata_status$uploaded == 0){
     tmp_env <- new.env()
-    fileName <- paste(input$file,".RData",sep = "")
-    myfile <- file.path("server",fileName)
-    Data <- load(myfile, tmp_env)
-    if(length(Data)==1){
-      Data <- tmp_env[[Data]]
-      Data <- Data$rankings
-    }
-    else
-      Data <- NULL
-    
-  }
-  Data
-})
-
-
-
-dataTableRatings <- eventReactive(input$go,{
-  req(input$file)
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RatingsFile)){
-    Data <- read.csv(input$RatingsFile$datapath)
-  }
-  else if(!is.null(input$file)) {
-    tmp_env <- new.env()
-    fileName <- paste(input$file,".RData",sep = "")
-    myfile <- file.path("server",fileName)
-    Data <- load(myfile, tmp_env)
-    if(length(Data)==1){
-      Data <- tmp_env[[Data]]
-      Data <- Data$rankings
-    }
-    else
-      Data <- NULL
-    
-  }
-  Data
-})
-
-
-
-
-
-Ratings <- eventReactive(input$go,{
-  req(input$file)
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile) && !is.null(input$RatingsFile)){
-    ratings = read.csv(input$RatingsFile$datapath)
-    rankings = read.csv(input$RankingsFile$datapath)
-    M <- input$RatingsMValue
-  }
-  else if(!is.null(input$file)) {
-    tmp_env <- new.env()
-    fileName <- paste(input$file,".RData",sep = "")
+    fileName <- paste(input$toyfile,".RData",sep = "")
     myfile <- file.path("server",fileName)
     Data <- load(myfile, tmp_env)
     if(length(Data)==1)
       Data <- tmp_env[[Data]]
     else
       Data <- NULL
-    
-    ratings <- Data$ratings
-    rankings <- Data$rankings
-    M <- Data$M
+    reactive_data$Ratings <- Data$ratings
+    reactive_data$Rankings <- Data$rankings
+    reactive_data$M <- Data$M
   }
+})
+
+
+observeEvent(input$upload,{
+  sessionEnvir <- sys.frame()
+  if (!is.null(input$RankingsFile) && !is.null(input$RatingsFile)){
+    ratings = as.matrix(read.csv(input$RatingsFile$datapath))
+    rankings = as.matrix(read.csv(input$RankingsFile$datapath))
+    colnames(rankings) <- sub("^X", "", colnames(rankings))
+    M <- as.numeric(input$RatingsMValue)
+    
+    
+    reactive_data$Ratings <- ratings
+    reactive_data$Rankings <- rankings
+    reactive_data$M <- M
+  }
+})
+
+output$dataTableRank <- renderTable(
+  reactive_data$Rankings
+)
+
+output$dataTableRate <- renderTable(
+  reactive_data$Ratings
+)
+
+output$RatingsPlot <- renderPlot({
+  rankings <- reactive_data$Rankings
+  ratings <- reactive_data$Ratings
+  M <- reactive_data$M
+
   #this is the "max" score, which the user should input too!
   ## Simple EDA
   I <- nrow(ratings)
   J <- ncol(ratings)
   R <- ncol(rankings)
+  colnames(rankings) <- sub("^X", "", colnames(rankings))
   
   ratings_long <- melt(ratings)
   names(ratings_long) <- c("Judge","Proposal","Rating")
@@ -92,31 +71,11 @@ Ratings <- eventReactive(input$go,{
 
 
 
-Rankings <- eventReactive(input$go,{
-  req(input$file)
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile)){
-    tmp_env <- new.env()
-    Data <- load(input$RankingsFile$datapath, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
-  }
-  else if(!is.null(input$file)) {
-    tmp_env <- new.env()
-    fileName <- paste(input$file,".RData",sep = "")
-    myfile <- file.path("server",fileName)
-    Data <- load(myfile, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
-    
-  }
-  ratings <- Data$ratings
-  rankings <- Data$rankings
-  M <- Data$M #this is the "max" score, which the user should input too!
+output$RankingsPlot <- renderPlot({
+  rankings <- reactive_data$Rankings
+  ratings <- reactive_data$Ratings
+  M <- reactive_data$M
+   #this is the "max" score, which the user should input too!
   
   ## Simple EDA
   I <- nrow(ratings)
@@ -125,46 +84,27 @@ Rankings <- eventReactive(input$go,{
   rankings_long <- melt(rankings)
   names(rankings_long) <- c("Judge","Place","Proposal")
   rankings_long$Judge <- factor(rankings_long$Judge)
-  rankings_long$Place <- factor(rankings_long$Place,levels=R:1,labels=toOrdinal(R:1))
+  rankings_long$Place <- factor(rankings_long$Place,
+                                levels = paste0(ncol(rankings):1),
+                                labels = toOrdinal(ncol(rankings):1))
   colfunc<-colorRampPalette(c("lightgray","black"))
-  
   g <- ggplot(rankings_long,aes(Proposal,fill=Place))+
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
     guides(fill = guide_legend(reverse = TRUE))+
     scale_fill_manual(values=colfunc(max(rankings)))+ylab("Count")+
-    theme(panel.grid = element_blank(),legend.position = "bottom")
+    theme(panel.grid = element_blank(),legend.position = "bottom") + scale_x_continuous(breaks = 1:J)
   g
 })
 
 
 
 
-Inconsistencies <- eventReactive(input$go,{
-  req(input$file)
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile)){
-    tmp_env <- new.env()
-    Data <- load(input$RankingsFile$datapath, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
-  }
-  else if(!is.null(input$file)) {
-    tmp_env <- new.env()
-    fileName <- paste(input$file,".RData",sep = "")
-    myfile <- file.path("server",fileName)
-    Data <- load(myfile, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
-    
-  }
-  ratings <- Data$ratings
-  rankings <- Data$rankings
-  M <- Data$M #this is the "max" score, which the user should input too!
+output$InconsistenciesPlot <- renderPlot({
+  rankings <- reactive_data$Rankings
+  ratings <- reactive_data$Ratings
+  M <- reactive_data$M
+  
   
   ## Simple EDA
   I <- nrow(ratings)
@@ -192,31 +132,6 @@ Inconsistencies <- eventReactive(input$go,{
   g
 })
 
-
-
-
-
-
-
-output$dataTableRank <- renderTable(
-  dataTableRankings()
-)
-output$dataTableRate <- renderTable(
-  dataTableRatings()
-)
-output$RatingsPlot <- renderPlot(
-  Ratings()
-)
-
-output$RankingsPlot <- renderPlot(
-  Rankings()
-)
-
-output$InconsistenciesPlot <- renderPlot(
-  Inconsistencies()
-)
-
-
 output$RankingsText <- renderText(
- input$RatingsMValue
+  reactive_data$M
 )

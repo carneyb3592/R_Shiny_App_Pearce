@@ -1,4 +1,5 @@
 dataUI <- tabPanel("Data",
+                   useShinyjs(),
                    tabsetPanel(
                        tabPanel("Upload",
                                 br(),
@@ -9,9 +10,9 @@ dataUI <- tabPanel("Data",
                                 h2("Example Datasets"),
                                 p("Choose one of the following..."),
                                 selectInput(
-                                  "file",
+                                  "toyfile",
                                   "Example file:",
-                                  choices = c("Select Input data...","ToyData","ToyData2","Other")
+                                  choices = c("ToyData","ToyData2")
                                 ),
                                 tags$hr(),
                                 h2("Upload Your Own Data"),
@@ -25,7 +26,7 @@ dataUI <- tabPanel("Data",
                                   by reviewer i to proposal j. NA indicates that proposal j was not accessible to 
                                   reviewer i, while 0 indicates that a proposal was considered but not ranked."),
                                 
-                                fileInput("RankingsFile", "Choose Rankings file",
+                                fileInput(inputId = "RankingsFile", "Choose Rankings file",
                                   accept = c(
                                      "text/csv",
                                      "text/comma-separated-values,text/plain",
@@ -97,7 +98,9 @@ dataUI <- tabPanel("Data",
                                   )
                                   
                                 ),
-                                actionButton("go","Go!", width = "150px", height= "100px", style="color: white; background-color: green; float: right")
+                                uiOutput("check_data"),
+                                actionButton("upload","Upload Data", width = "150px", height= "100px", style="color: white; background-color: green; float: right"),
+                                uiOutput("unloadButton")
                               ),
                      tabPanel("Summary",
                               h2("Rankings"),
