@@ -9,6 +9,7 @@
 
 library(shiny)
 require(shinyjs)
+library(plotly)
 
 ###########  UI ELEMENTS ##################
 source("ui/homeUI.R",local=T)

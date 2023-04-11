@@ -1,4 +1,4 @@
-MB <- eventReactive(input$plot,{
+mb_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
   M <- reactive_data$M
@@ -42,9 +42,13 @@ MB <- eventReactive(input$plot,{
   g
 })
 
+MB <- eventReactive(input$plot,{
+  mb_plot_input()
+})
 
-output$MallowsBinomial <- renderPlot(
-  MB()
+
+output$MallowsBinomial <- renderPlotly(
+  ggplotly(MB())
 )
 
 output$EstimationWarningText <- renderText({
@@ -62,3 +66,19 @@ output$CIWarningText <- renderText({
     HTML("Include C.I.?")
   }
 })
+
+output$downloadMB <- downloadHandler(
+  filename = function() {
+    paste('MallowsBinomial.png', sep='')
+  },
+  content = function(file){
+    ggsave(file,
+           plot = mb_plot_input(),
+           device = "png",
+           width = 1920,
+           height = 1080,
+           units = "px")
+  }
+)
+
+

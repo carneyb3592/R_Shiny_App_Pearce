@@ -43,11 +43,11 @@ output$dataTableRate <- renderTable(
   reactive_data$Ratings
 )
 
-output$RatingsPlot <- renderPlot({
+ratings_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
   M <- reactive_data$M
-
+  
   #this is the "max" score, which the user should input too!
   ## Simple EDA
   I <- nrow(ratings)
@@ -60,22 +60,24 @@ output$RatingsPlot <- renderPlot({
   ratings_long$Judge <- factor(ratings_long$Judge)
   ratings_long$Proposal <- factor(ratings_long$Proposal)
   
-  g <- ggplot(ratings_long,aes(Proposal,Rating))+
+  ggplot(ratings_long,aes(Proposal,Rating))+
     theme_bw(base_size=15)+geom_boxplot()+ylim(c(0,M))+
     ggtitle("Ratings by Proposal",paste0("0 = best; ",M," = worst"))+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  g
 })
 
+output$RatingsPlot <- renderPlotly({
+  g <- ratings_plot_input()
+  p <- ggplotly(g)
+  
+  p %>% config(displayModeBar = F)
+})
 
-
-
-
-output$RankingsPlot <- renderPlot({
+rankings_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
   M <- reactive_data$M
-   #this is the "max" score, which the user should input too!
+  #this is the "max" score, which the user should input too!
   
   ## Simple EDA
   I <- nrow(ratings)
@@ -88,19 +90,29 @@ output$RankingsPlot <- renderPlot({
                                 levels = paste0(ncol(rankings):1),
                                 labels = toOrdinal(ncol(rankings):1))
   colfunc<-colorRampPalette(c("lightgray","black"))
-  g <- ggplot(rankings_long,aes(Proposal,fill=Place))+
+  ggplot(rankings_long,aes(Proposal,fill=Place)) +
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
-    guides(fill = guide_legend(reverse = TRUE))+
     scale_fill_manual(values=colfunc(max(rankings)))+ylab("Count")+
     theme(panel.grid = element_blank(),legend.position = "bottom") + scale_x_continuous(breaks = 1:J)
-  g
+})
+
+output$RankingsPlot <- renderPlotly({
+  g <- rankings_plot_input()
+  p <- ggplotly(g)
+ 
+  p %>% config(displayModeBar = F) %>% reverse_legend_labels()
 })
 
 
+reverse_legend_labels <- function(plotly_plot) {
+  n_labels <- length(plotly_plot$x$data)
+  plotly_plot$x$data[1:n_labels] <- plotly_plot$x$data[n_labels:1]
+  plotly_plot
+}
 
 
-output$InconsistenciesPlot <- renderPlot({
+inconsistencies_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
   M <- reactive_data$M
@@ -123,15 +135,62 @@ output$InconsistenciesPlot <- renderPlot({
     }}
     consistency[i,2] <- kendall
   }
-  g <- ggplot(consistency,aes(x=Kendall))+
+  ggplot(consistency,aes(x=Kendall))+
     theme_bw(base_size=15)+geom_histogram()+
     xlim(c(-.1,max(consistency$Kendall)+.1))+
     xlab("Number of Inconsistent Item Pairs")+ylab("Count")+
     ggtitle("Inconsistency Between Ratings and Rankings")+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  g
+})
+output$InconsistenciesPlot <- renderPlotly({
+  g <- inconsistencies_plot_input()
+  p <- ggplotly(g)
+  p %>% config(displayModeBar = F)
 })
 
 output$RankingsText <- renderText(
   reactive_data$M
+)
+
+##DOWNLOAD FUNCTIONS########################################################
+
+output$downloadRatings <- downloadHandler(
+  filename = function() {
+    paste('ratingsplot.png', sep='')
+  },
+  content = function(file){
+    ggsave(file,
+      plot = ratings_plot_input(),
+      device = "png",
+      width = 1920,
+      height = 1080,
+      units = "px") 
+  }
+)
+output$downloadRankings <- downloadHandler(
+  filename = function() {
+    paste('rankingsplot.png', sep='')
+  },
+  content = function(file){
+    ggsave(file,
+           plot = rankings_plot_input(),
+           device = "png",
+           width = 1920,
+           height = 1080,
+           units = "px") 
+  }
+)
+
+output$downloadInconsistencies <- downloadHandler(
+  filename = function() {
+    paste('inconsistenciesplot.png', sep='')
+  },
+  content = function(file){
+    ggsave(file,
+           plot = inconsistencies_plot_input(),
+           device = "png",
+           width = 1920,
+           height = 1080,
+           units = "px")
+  }
 )

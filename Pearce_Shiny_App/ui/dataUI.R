@@ -116,27 +116,31 @@ dataUI <- tabPanel("Data",
                               sidebarLayout(position = "left",
                                 sidebarPanel(
                                   h3("Ratings Figure"),
-                                  p("The first plot displays the stacked bar charts of ranks 
+                                  p("The first plot displays boxplots of ratings assigned 
+                                    to each proposal, overlaid with the original data. The 
+                                    x-axis displays proposals in numerical order and the y-axis 
+                                    displays ratings from best (0) to worst ( M = ",textOutput("RankingsText",inline=TRUE),").",sep="")
+                                 
+                                ),
+                                mainPanel(
+                                  shinycssloaders::withSpinner(plotlyOutput("RatingsPlot")),
+                                  downloadButton('downloadRatings','Download Plot')
+                                  
+                                )
+                              ),
+                              sidebarLayout(position = "left",
+                                sidebarPanel(
+                                  h3("Rankings Figure"),
+                                  p("The second plot displays the stacked bar charts of ranks 
                                     assigned to each proposal. The x-axis displays proposals 
                                     in numerical order and the y-axis displays counts. 
                                     Different rank levels are indicated using colors. 
                                     Hover over each bar for more information.")
                                 ),
                                 mainPanel(
-                                  shinycssloaders::withSpinner(plotOutput("RatingsPlot"))
-                                )
-                              ),
-                              sidebarLayout(position = "left",
-                                sidebarPanel(
-                                  h3("Rankings Figure"),
-                                  p("The second plot displays boxplots of ratings assigned 
-                                    to each proposal, overlaid with the original data. The 
-                                    x-axis displays proposals in numerical order and the y-axis 
-                                    displays ratings from best (0) to worst ( M = ",textOutput("RankingsText",inline=TRUE),").",sep="")
+                                  shinycssloaders::withSpinner(plotlyOutput("RankingsPlot")),
+                                  downloadButton('downloadRankings','Download Plot')
                                   
-                                ),
-                                mainPanel(
-                                  shinycssloaders::withSpinner(plotOutput("RankingsPlot"))
                                 )
                               ),
                               sidebarLayout(position = "left",
@@ -149,7 +153,9 @@ dataUI <- tabPanel("Data",
                                     based on the ratings or rankings (e.g., due to missing data or rating ties).")
                                 ),
                                 mainPanel(
-                                  shinycssloaders::withSpinner(plotOutput("InconsistenciesPlot"))
+                                  shinycssloaders::withSpinner(plotlyOutput("InconsistenciesPlot")),
+                                  downloadButton('downloadInconsistencies','Download Plot')
+                                  
                                 )
                               )
                    )

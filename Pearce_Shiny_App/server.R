@@ -14,6 +14,7 @@ library(reshape2)
 library(toOrdinal)
 library(highcharter)
 library(shinycssloaders)
+library(plotly)
 # Define server logic required to draw a histogram
 function(input, output, session) {
     source("server/dataServer.R",local=T)
