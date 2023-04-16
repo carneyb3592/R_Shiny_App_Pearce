@@ -26,6 +26,8 @@ observeEvent(input$upload,{
     ratings = as.matrix(read.csv(input$RatingsFile$datapath))
     rankings = as.matrix(read.csv(input$RankingsFile$datapath))
     colnames(rankings) <- sub("^X", "", colnames(rankings))
+    colnames(ratings) <- sub("^X", "", colnames(ratings))
+    
     M <- as.numeric(input$RatingsMValue)
     
     
@@ -35,12 +37,40 @@ observeEvent(input$upload,{
   }
 })
 
-output$dataTableRank <- renderTable(
-  reactive_data$Rankings
+rankings_table_input <- reactive({
+  data <- as.matrix(reactive_data$Rankings)
+  colnames(data) <- paste0("Proposal ",seq(1:ncol(data)))
+  rownames(data) <- paste0("Judge ",seq(1:nrow(data)))
+  data
+})
+
+output$dataTableRank <- DT::renderDataTable(
+  rankings_table_input(),
+  options = list(
+    scrollX = TRUE,
+    pageLength = 10,
+    server = TRUE,
+    scrollCollapse = TRUE,
+    dom = "tipr"
+  )
 )
 
-output$dataTableRate <- renderTable(
-  reactive_data$Ratings
+ratings_table_input <- reactive({
+  data <- as.matrix(reactive_data$Ratings)
+  colnames(data) <- paste0("Proposal ",seq(1:ncol(data)))
+  rownames(data) <- paste0("Judge ",seq(1:nrow(data)))
+  data
+})
+
+output$dataTableRate <- DT::renderDataTable(
+  ratings_table_input,
+  options = list(
+    scrollX = TRUE,
+    pageLength = 10,
+    server = TRUE,
+    scrollCollapse = TRUE,
+    dom = "tipr"
+  )
 )
 
 ratings_plot_input <- reactive({
@@ -63,14 +93,22 @@ ratings_plot_input <- reactive({
   ggplot(ratings_long,aes(Proposal,Rating))+
     theme_bw(base_size=15)+geom_boxplot()+ylim(c(0,M))+
     ggtitle("Ratings by Proposal",paste0("0 = best; ",M," = worst"))+
+    geom_point(alpha = 0)+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
 })
 
 output$RatingsPlot <- renderPlotly({
   g <- ratings_plot_input()
   p <- ggplotly(g)
-  
-  p %>% config(displayModeBar = F)
+  for (i in 1:length(p$x$data)) {
+    #print(p$x$data[[i]]$x)
+    #print(p$x$data[[i]]$y)
+    #print(p$x$data[[i]]$text)
+    #print(p$x$data[[i]])$hoverinfo 
+    #p$x$data[[i]]$hoverinfo = "text"
+    
+  }
+  p
 })
 
 rankings_plot_input <- reactive({
@@ -100,7 +138,20 @@ rankings_plot_input <- reactive({
 output$RankingsPlot <- renderPlotly({
   g <- rankings_plot_input()
   p <- ggplotly(g)
- 
+  
+  for (i in 1:length(p$x$data)) {
+    #print(p$x$data[[i]]$x)
+    #print(p$x$data[[i]]$y)
+    #print(p$x$data[[i]]$text)
+    #print(p$x$data[[i]])
+    
+    p$x$data[[i]]$text <- paste0(
+      p$x$data[[i]]$y, " judges put proposal ",
+      p$x$data[[i]]$x, "<br /> in ", p$x$data[[i]]$name,
+      " Place"
+      
+    )
+  }
   p %>% config(displayModeBar = F) %>% reverse_legend_labels()
 })
 
@@ -135,13 +186,16 @@ inconsistencies_plot_input <- reactive({
     }}
     consistency[i,2] <- kendall
   }
+  
   ggplot(consistency,aes(x=Kendall))+
-    theme_bw(base_size=15)+geom_histogram()+
-    xlim(c(-.1,max(consistency$Kendall)+.1))+
+    theme_bw(base_size=15)+geom_histogram(binwidth = 0.5)+
+    scale_x_continuous(limits=c(-.6,max(consistency$Kendall)+.6),
+                       breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
     xlab("Number of Inconsistent Item Pairs")+ylab("Count")+
     ggtitle("Inconsistency Between Ratings and Rankings")+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
 })
+
 output$InconsistenciesPlot <- renderPlotly({
   g <- inconsistencies_plot_input()
   p <- ggplotly(g)

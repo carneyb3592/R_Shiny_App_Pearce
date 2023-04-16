@@ -105,10 +105,10 @@ dataUI <- tabPanel("Data",
                      tabPanel("Summary",
                               h2("Rankings"),
                               tags$hr(),
-                              div(style="overflow-x: scroll;height: 200px;overflow-y:scroll;",tableOutput("dataTableRank")),
+                              DT::dataTableOutput("dataTableRank"),
                               h2("Ratings"),
                               tags$hr(), 
-                              div(style="overflow-x: scroll;height: 200px;overflow-y:scroll;",tableOutput("dataTableRate"))
+                              DT::dataTableOutput("dataTableRate")
                             ),
                      tabPanel("EDA",
                               h2("Exploratory Data Analysis"),

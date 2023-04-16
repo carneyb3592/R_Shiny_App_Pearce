@@ -29,6 +29,20 @@ mb_plot_input <- reactive({
       ylim(c(0,1))+ylab("Estimated Quality")+
       ggtitle("Point Estimates and 95% CI of Quality","Exact Estimation Algorithm")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
+    p <- ggplotly(g)
+    for (i in 1:length(p$x$data)) {
+      #print(p$x$data[[i]]$x)
+      #print(p$x$data[[i]]$y)
+      #print(p$x$data[[i]]$text)
+      #print(p$x$data[[i]])
+      #print(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus)
+      
+      p$x$data[[i]]$text <- paste0(
+        "Integrated Score: ", round(p$x$data[[i]]$y, digits = 3),
+        "<br />95% CI Lower Limit: ",round(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus, digits = 3),
+        "<br />95% CI Upper Limit: ",round(p$x$data[[i]]$y+p$x$data[[i]]$error_y$array, digits = 3)
+      )
+    }
     
   } else {
     results_p <- data.frame(Proposal=1:J,PointEstimate=point_estimate$p)
@@ -38,8 +52,10 @@ mb_plot_input <- reactive({
       ylim(c(0,1))+ylab("Estimated Quality")+
       ggtitle("Point Estimates and 95% CI of Quality","Exact Estimation Algorithm")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
+    p <- ggplotly(g)
+    
   }
-  g
+  p
 })
 
 MB <- eventReactive(input$plot,{
@@ -47,9 +63,9 @@ MB <- eventReactive(input$plot,{
 })
 
 
-output$MallowsBinomial <- renderPlotly(
-  ggplotly(MB())
-)
+output$MallowsBinomial <- renderPlotly({
+  MB()
+})
 
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
