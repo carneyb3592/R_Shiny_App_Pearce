@@ -54,6 +54,11 @@ mb_plot_input <- reactive({
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
     p <- ggplotly(g)
     
+    for (i in 1:length(p$x$data)) {
+      p$x$data[[i]]$text <- paste0(
+        "Integrated Score: ", round(p$x$data[[i]]$y, digits = 3)
+      )
+    }
   }
   p
 })
@@ -64,7 +69,18 @@ MB <- eventReactive(input$plot,{
 
 
 output$MallowsBinomial <- renderPlotly({
-  MB()
+  p <- MB()
+  p %>% layout(
+    spikedistance = -1,
+    yaxis = list(
+      showspikes = TRUE,
+      spikemode = "across",
+      showline=TRUE,
+      spikedash = 'solid',
+      spikesnap ="cursor",
+      spikethickness=1
+    )
+  )
 })
 
 output$EstimationWarningText <- renderText({
