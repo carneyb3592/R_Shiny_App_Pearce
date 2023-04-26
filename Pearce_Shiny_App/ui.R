@@ -21,7 +21,11 @@ source("ui/MBUI.R",local=T)
 
 
 shinyUI(
-  navbarPage("App",
+  navbarPage(title=div(img(src="rankrate_logo.png",
+                           height = 25,
+                           width = 25,
+                           style = "margin:1px 1px"),
+                       "Peer Review"),
              homeUI,
              dataUI,
              MBUI
