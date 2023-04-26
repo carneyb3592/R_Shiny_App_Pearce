@@ -1,0 +1,19 @@
+---
+title: "report"
+output: pdf_document
+params:
+  plot1: NA
+  plot2: NA
+  plot3: NA
+---
+
+```{r}
+plot(params$plot1)
+```
+```{r}
+plot(params$plot2)
+```
+```{r}
+plot(params$plot3)
+```
+This is a test report

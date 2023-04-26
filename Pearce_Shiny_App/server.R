@@ -16,6 +16,10 @@ library(highcharter)
 library(shinycssloaders)
 library(plotly)
 library(DT)
+library(ggrepel)
+library(latexpdf)
+library(knitr)
+
 # Define server logic required to draw a histogram
 function(input, output, session) {
     source("server/dataServer.R",local=T)

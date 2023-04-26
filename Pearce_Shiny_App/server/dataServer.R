@@ -63,7 +63,7 @@ ratings_table_input <- reactive({
 })
 
 output$dataTableRate <- DT::renderDataTable(
-  ratings_table_input,
+  ratings_table_input(),
   options = list(
     scrollX = TRUE,
     pageLength = 10,
@@ -93,7 +93,6 @@ ratings_plot_input <- reactive({
   ggplot(ratings_long,aes(Proposal,Rating))+
     theme_bw(base_size=15)+geom_boxplot()+ylim(c(0,M))+
     ggtitle("Ratings by Proposal",paste0("0 = best; ",M," = worst"))+
-    geom_point(alpha = 0)+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
 })
 
@@ -104,6 +103,8 @@ output$RatingsPlot <- renderPlotly({
     #print(p$x$data[[i]]$x)
     #print(p$x$data[[i]]$y)
     #print(p$x$data[[i]]$text)
+    print(p$x$data[[i]])
+    
     #print(p$x$data[[i]])$hoverinfo 
     #p$x$data[[i]]$hoverinfo = "text"
     
