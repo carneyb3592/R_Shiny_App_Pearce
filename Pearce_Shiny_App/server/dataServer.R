@@ -39,7 +39,7 @@ observeEvent(input$upload,{
 
 rankings_table_input <- reactive({
   data <- as.matrix(reactive_data$Rankings)
-  colnames(data) <- paste0("Proposal ",seq(1:ncol(data)))
+  colnames(data) <- paste0(toOrdinal(1:ncol(data))," Place")
   rownames(data) <- paste0("Judge ",seq(1:nrow(data)))
   data
 })
@@ -132,7 +132,7 @@ rankings_plot_input <- reactive({
   ggplot(rankings_long,aes(Proposal,fill=Place)) +
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
-    scale_fill_manual(values=colfunc(max(rankings)))+ylab("Count")+
+    scale_fill_manual(values=colfunc(max(rankings,na.rm=T)))+ylab("Count")+
     theme(panel.grid = element_blank(),legend.position = "bottom") + scale_x_continuous(breaks = 1:J)
 })
 
@@ -179,11 +179,18 @@ inconsistencies_plot_input <- reactive({
   for(i in 1:nrow(ratings)){
     kendall <- 0
     for(j1 in 1:(J-1)){for(j2 in (j1+1):J){
-      if(ratings[i,j1] < ratings[i,j2]){
-        if(which(rankings[i,]==j1)>which(rankings[i,]==j2)){kendall <- kendall + 1}
-      }else if(ratings[i,j1] > ratings[i,j2]){
-        if(which(rankings[i,]==j1) < which(rankings[i,]==j2)){kendall <- kendall + 1}
+      if(any(is.na(ratings[i,c(j1,j2)]))==FALSE){
+        if(ratings[i,j1] < ratings[i,j2]){
+          if(j2 %in% rankings[i,] & !(j1 %in% rankings[i,])){kendall <- kendall+1
+          }else if(j1%in%rankings[i,] & j2%in%rankings[i,]){
+            if(which(rankings[i,]==j1)>which(rankings[i,]==j2)){kendall <- kendall + 1}}
+        }else if(ratings[i,j1] > ratings[i,j2]){
+          if(j1 %in% rankings[i,] & !(j2 %in% rankings[i,])){kendall <- kendall+1
+          }else if(j2%in%rankings[i,] & j1%in%rankings[i,]){
+            if(which(rankings[i,]==j2)>which(rankings[i,]==j1)){kendall <- kendall + 1}}
+        }
       }
+      
     }}
     consistency[i,2] <- kendall
   }
