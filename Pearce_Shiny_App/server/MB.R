@@ -6,12 +6,12 @@ reactive_data$I <- NULL
 reactive_data$J <- NULL
 reactive_data$R <- NULL
 
+## Code to Run Model
 run_model <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
   M <- reactive_data$M
-  #this is the "max" score, which the user should input too!
-  ## Simple EDA
+
   I <- nrow(ratings)
   J <- ncol(ratings)
   R <- ncol(rankings)
@@ -23,26 +23,40 @@ run_model <- reactive({
   names(ratings_long) <- c("Judge","Proposal","Rating")
   ratings_long$Judge <- factor(ratings_long$Judge)
   ratings_long$Proposal <- factor(ratings_long$Proposal)
-  
   reactive_data$ratings_long <- ratings_long
   
   if(input$MBEstimationMethod == "exact"){
     reactive_data$point_estimate <- fit_mb(Pi=rankings,X=ratings,M=M,method="ASTAR")
+    if(input$CI_Included == "yes") {
+      ci <- ci_mb(Pi=rankings,X=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="ASTAR")
+      reactive_data$ci <- ci
+      reactive_data$results_p <- data.frame(Proposal=1:J,
+                                            PointEstimate=reactive_data$point_estimate$p,
+                                            LowerLimit=unlist(ci$ci[1,1:J]),
+                                            UpperLimit=unlist(ci$ci[2,1:J]))
+    } else { 
+      reactive_data$results_p <- data.frame(Proposal=1:J,
+                                            PointEstimate=reactive_data$point_estimate$p)
+    }
   } else {
     reactive_data$point_estimate <- fit_mb(Pi=rankings,X=ratings,M=M,method="Greedy")
+    if(input$CI_Included == "yes") {
+      ci <- ci_mb(Pi=rankings,X=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="Greedy")
+      reactive_data$ci <- ci
+      reactive_data$results_p <- data.frame(Proposal=1:J,
+                                            PointEstimate=reactive_data$point_estimate$p,
+                                            LowerLimit=unlist(ci$ci[1,1:J]),
+                                            UpperLimit=unlist(ci$ci[2,1:J]))
+    } else { 
+      reactive_data$results_p <- data.frame(Proposal=1:J,
+                                            PointEstimate=reactive_data$point_estimate$p)
+    }
   }
-  ci <- ci_mb(Pi=rankings,X=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="ASTAR")
-  reactive_data$ci <- ci
-  if(input$CI_Included == "yes") {
-    reactive_data$results_p <- data.frame(Proposal=1:J,PointEstimate=reactive_data$point_estimate$p,
-                              LowerLimit=unlist(ci$ci[1,1:J]),UpperLimit=unlist(ci$ci[2,1:J]))
-  } else {
-    reactive_data$results_p <- data.frame(Proposal=1:J,PointEstimate=reactive_data$point_estimate$p)
-  }
+
   
 })
 
-
+## Code to Generate First MB Plot (Integrated Scores)
 mb_quality_plot_input <- reactive({
   run_model()
   
@@ -74,13 +88,10 @@ mb_quality_plot_input <- reactive({
   }
   g
 })
-
 MB_Quality <- eventReactive(input$plot,{
   mb_quality_plot_input()
   
 })
-
-
 output$MallowsBinomialQuality <- renderPlotly({
   p <- ggplotly(MB_Quality())
   if(input$CI_Included == "yes") {
@@ -116,71 +127,52 @@ output$MallowsBinomialQuality <- renderPlotly({
   )
 })
 
+## Code to Generate Second MB Plot (Estimated Ranks)
 mb_rank_plot_input <- reactive({
 
-  ci <- reactive_data$ci
-  point_estimate <- reactive_data$point_estimate
-  I <- reactive_data$I
-  J <- reactive_data$J
-  R <- reactive_data$R
-  ratings_long <- reactive_data$ratings_long
-  results_rank <- t(apply(ci$boostrap_ptheta[,1:J],1,rank))
-  results_rankCI <- data.frame(Proposal=1:J,RankEstimate = rank(point_estimate$pi0),
-                               LowerLimit=apply(results_rank,2,function(ranks){quantile(ranks,0.025)}),
-                               UpperLimit=apply(results_rank,2,function(ranks){quantile(ranks,0.975)}))
-  
-  ggplot(results_rankCI,aes(Proposal,y=RankEstimate,ymin=LowerLimit,ymax=UpperLimit))+
-    theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
-    ylab("Estimated Rank")+
-    theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  
+  if(input$CI_Included == "yes") {
+    ci <- reactive_data$ci
+    point_estimate <- reactive_data$point_estimate
+    I <- reactive_data$I
+    J <- reactive_data$J
+    R <- reactive_data$R
+    results_rank <- t(apply(ci$boostrap_ptheta[,1:J],1,rank))
+    results_rankCI <- data.frame(Proposal=1:J,RankEstimate = rank(point_estimate$pi0),
+                                 LowerLimit=apply(results_rank,2,function(ranks){quantile(ranks,0.025)}),
+                                 UpperLimit=apply(results_rank,2,function(ranks){quantile(ranks,0.975)}))
+    
+    g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate,ymin=LowerLimit,ymax=UpperLimit))+
+      theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
+      ylab("Estimated Rank")+
+      theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
+  } else {
+    point_estimate <- reactive_data$point_estimate
+    I <- reactive_data$I
+    J <- reactive_data$J
+    R <- reactive_data$R
+    results_rankCI <- data.frame(Proposal=1:J,RankEstimate = rank(point_estimate$pi0))
+    
+    g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate))+
+      theme_bw(base_size=15)+geom_point(size=3)+
+      ylab("Estimated Rank")+
+      theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
+  }
+  g
 })
 MB_Rank <- eventReactive(input$plot,{
   mb_rank_plot_input()
-  
 })
 output$MallowsBinomialRank <- renderPlotly({
   ggplotly(MB_Rank())
 })
 
-
-mb_rank_plot_input <- reactive({
-
-  ci <- reactive_data$ci
-  point_estimate <- reactive_data$point_estimate
-  I <- reactive_data$I
-  J <- reactive_data$J
-  R <- reactive_data$R
-  ratings_long <- reactive_data$ratings_long
-  results_rank <- t(apply(ci$boostrap_ptheta[,1:J],1,rank))
-  results_rankCI <- data.frame(Proposal=1:J,RankEstimate = rank(point_estimate$pi0),
-                               LowerLimit=apply(results_rank,2,function(ranks){quantile(ranks,0.025)}),
-                               UpperLimit=apply(results_rank,2,function(ranks){quantile(ranks,0.975)}))
-  
-  ggplot(results_rankCI,aes(Proposal,y=RankEstimate,ymin=LowerLimit,ymax=UpperLimit))+
-    theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
-    ylab("Estimated Rank")+
-    theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
-  
-})
-MB_Rank <- eventReactive(input$plot,{
-  mb_rank_plot_input()
-  
-})
-output$MallowsBinomialRank <- renderPlotly({
-  ggplotly(MB_Rank())
-})
-
-
-
+## Code to Generate Third MB Plot (MB vs. MR Ranks)
 mb_mean_plot_input <- reactive({
   
-  ci <- reactive_data$ci
   point_estimate <- reactive_data$point_estimate
   I <- reactive_data$I
   J <- reactive_data$J
   R <- reactive_data$R
-  ratings_long <- reactive_data$ratings_long
   ratings <- reactive_data$Ratings
   
   
@@ -205,6 +197,7 @@ output$MallowsBinomialMean <- renderPlotly({
   ggplotly(MB_Mean())
 })
 
+
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
     HTML("Estimation Method <p style='color:red;'> (Warning, running an exact estimation may take a while)</p>")
@@ -212,7 +205,6 @@ output$EstimationWarningText <- renderText({
     HTML("Estimation Method")
   }
 })
-
 output$CIWarningText <- renderText({
   if(input$CI_Included == "yes"){
     HTML("Include C.I.? <p style='color:red;'> (Warning, including a confidence interval will significantly add to the time.)</p>")
