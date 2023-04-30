@@ -4,25 +4,32 @@ MBUI <- tabPanel("MB",
                  below, and then click 'Plot'. After model fitting, you may visualize model results via three plots."),
 
                  tags$hr(),
-
+                verticalLayout(
+                  fluidRow(
+                    column(
+                      2,
+                      radioButtons(
+                        label = "Estimation Method",
+                        inputId = "MBEstimationMethod",
+                        choices = c(
+                          "Exact"= "exact",
+                          "Approximate" = "approximate"
+                        ),
+                        selected = "approximate"
+                      )
+                      
+                    ),
+                    column(
+                      4,
+                      htmlOutput("EstimationWarningText")
+                    )
+                  
+                ),
                  fluidRow(
                    column(
                      2,
                      radioButtons(
-                       label = htmlOutput("EstimationWarningText"),
-                       inputId = "MBEstimationMethod",
-                       choices = c(
-                         "Exact"= "exact",
-                         "Approximate" = "approximate"
-                       ),
-                       selected = "approximate"
-                     )
-
-                   ),
-                   column(
-                     2,
-                     radioButtons(
-                       label = htmlOutput("CIWarningText"),
+                       label = "Include C.I.?",
                        inputId = "CI_Included",
                        choices = c(
                          "Yes" = "yes",
@@ -30,7 +37,12 @@ MBUI <- tabPanel("MB",
                        ),
                        selected = "no"
                      )
+                   ),
+                   column(
+                     4,
+                     htmlOutput("CIWarningText")
                    )
+                  )
                  ),
                  actionButton("plot","Plot",width = "150px", height= "100px", style="color: white; background-color: green"),
                  shinycssloaders::withSpinner(
@@ -42,10 +54,9 @@ MBUI <- tabPanel("MB",
                  ),
                  downloadButton('downloadMBRank','Download Plot'),
                  shinycssloaders::withSpinner(
-                   plotlyOutput("MallowsBinomialMean")
+                   plotOutput("MallowsBinomialMean")
                  ),
-                 downloadButton('downloadMBMean','Download Plot'),
-                 downloadButton('downloadReport','Generate Report')
+                 downloadButton('downloadMBMean','Download Plot')
 
 
 )

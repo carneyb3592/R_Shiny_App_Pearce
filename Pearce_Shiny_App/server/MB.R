@@ -90,7 +90,7 @@ mb_quality_plot_input <- reactive({
 })
 MB_Quality <- eventReactive(input$plot,{
   mb_quality_plot_input()
-  
+
 })
 output$MallowsBinomialQuality <- renderPlotly({
   p <- ggplotly(MB_Quality())
@@ -113,7 +113,6 @@ output$MallowsBinomialQuality <- renderPlotly({
     }
     
   }
-  
   
   p %>% layout(
     spikedistance = -1,
@@ -163,7 +162,26 @@ MB_Rank <- eventReactive(input$plot,{
   mb_rank_plot_input()
 })
 output$MallowsBinomialRank <- renderPlotly({
-  ggplotly(MB_Rank())
+  p <- ggplotly(MB_Rank())
+  if(input$CI_Included == "yes") {
+    for (i in 1:length(p$x$data)) {
+      p$x$data[[i]]$text <- paste0(
+        "Proposal ", p$x$data[[i]]$x,
+        "<br />Rank Estimate: ", round(p$x$data[[i]]$y, digits = 3),
+        "<br />95% CI Lower Limit: ",round(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus, digits = 3),
+        "<br />95% CI Upper Limit: ",round(p$x$data[[i]]$y+p$x$data[[i]]$error_y$array, digits = 3)
+      )
+    }
+  } else {
+    for (i in 1:length(p$x$data)) {
+      p$x$data[[i]]$text <- paste0(
+        "Proposal ", p$x$data[[i]]$x,
+        "<br />Rank Estimate: ", round(p$x$data[[i]]$y, digits = 3)
+      )
+    }
+    
+  }
+  p
 })
 
 ## Code to Generate Third MB Plot (MB vs. MR Ranks)
@@ -193,23 +211,23 @@ MB_Mean <- eventReactive(input$plot,{
   mb_mean_plot_input()
   
 })
-output$MallowsBinomialMean <- renderPlotly({
-  ggplotly(MB_Mean())
+output$MallowsBinomialMean <- renderPlot({
+  MB_Mean()
 })
 
 
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
-    HTML("Estimation Method <p style='color:red;'> (Warning, running an exact estimation may take a while)</p>")
+    HTML("<p style='color:red;'> (Warning, running an exact estimation may take a while)</p>")
   } else {
-    HTML("Estimation Method")
+    HTML("")
   }
 })
 output$CIWarningText <- renderText({
   if(input$CI_Included == "yes"){
-    HTML("Include C.I.? <p style='color:red;'> (Warning, including a confidence interval will significantly add to the time.)</p>")
+    HTML("<p style='color:red;'> (Warning, including a confidence interval will significantly add to the time.)</p>")
   } else {
-    HTML("Include C.I.?")
+    HTML("")
   }
 })
 

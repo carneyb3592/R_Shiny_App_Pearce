@@ -9,11 +9,22 @@ dataUI <- tabPanel("Data",
                                 h2("Toy Datasets"),
                                 p("The following three toy datasets were described and analyzed in Gallo et al. (2023). Please select from the
                                 following options."),
-                                selectInput(
-                                  "toyfile",
-                                  "Choose Toy Dataset:",
-                                  choices = c("ToyData1","ToyData2","ToyData3")
+                                br(),
+                                fluidRow(
+                                  column(
+                                    4,
+                                    selectInput(
+                                      "toyfile",
+                                      "Choose Toy Dataset:",
+                                      choices = c("ToyData1","ToyData2","ToyData3")
+                                    )
+                                  ),
+                                  column(
+                                    8,
+                                    uiOutput("ToyDataDescription")
+                                  )
                                 ),
+                                
                                 tags$hr(),
                                 h2("Upload Your Own Data"),
                                 br(),

@@ -256,3 +256,13 @@ output$downloadInconsistencies <- downloadHandler(
            units = "px")
   }
 )
+
+
+output$ToyDataDescription <- reactive({
+  selectedData <- input$toyfile
+  text <- switch (input$toyfile,
+    ToyData1 = "This is toy data1",
+    ToyData2 = "This is toy data2",
+    ToyData3 = "This is toy data3"
+  )
+})

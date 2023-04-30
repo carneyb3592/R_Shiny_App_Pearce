@@ -15,19 +15,33 @@ library(DT)
 source("ui/homeUI.R",local=T)
 source("ui/dataUI.R",local=T)
 source("ui/MBUI.R",local=T)
-
+source("ui/reportUI.R",local=T)
 
 ###########################################
 
 
 shinyUI(
-  navbarPage(title=div(img(src="rankrate_logo.png",
-                           height = 25,
-                           width = 25,
-                           style = "margin:1px 1px"),
-                       "Peer Review"),
-             homeUI,
-             dataUI,
-             MBUI
+  tagList(
+    
+  
+  tags$head(
+    tags$link(
+      rel = "stylesheet",
+      type = "text/css",
+      href = "style.css"
+    )
+  ),
+    navbarPage(collapsible=TRUE,
+               title=div(img(src="rankrate_logo.png",
+                             height = 50,
+                             width = 50,
+                             style = "margin:1px 1px"),
+                         "Peer Review"),
+               homeUI,
+               dataUI,
+               MBUI,
+               reportUI
+               
+    )
   )
 )
