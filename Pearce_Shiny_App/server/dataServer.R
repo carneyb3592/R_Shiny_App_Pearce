@@ -261,8 +261,13 @@ output$downloadInconsistencies <- downloadHandler(
 output$ToyDataDescription <- reactive({
   selectedData <- input$toyfile
   text <- switch (input$toyfile,
-    ToyData1 = "This is toy data1",
-    ToyData2 = "This is toy data2",
-    ToyData3 = "This is toy data3"
+    ToyData1 = "Toy Data 1 contains 3 proposals and 16 judges. 
+    The dataset demonstrates tie-breaking equally rated proposals using rankings.",
+    ToyData2 = "Toy Data 2 contains 8 proposals and 16 judges, 
+    who each only provided top-3 rankings. The dataset demonstrates improved decision-making 
+    even with partial rankings.",
+    ToyData3 = "Toy Data 3 contains 3 proposals and 16 judges.
+    The dataset demonstrates the ability of Mallows-Binomial to analyze data when judges
+    provide internally inconsistent sets of ratings and rankings."
   )
 })
