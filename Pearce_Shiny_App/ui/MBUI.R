@@ -1,7 +1,8 @@
 MBUI <- tabPanel("MB",
                  h1("Mallows-Binomial"),
-                 p("On this page, we fit a Mallows-Binomial (MB) model to rankings and ratings data. Select how you would like to fit the model using the radio buttons
-                 below, and then click 'Plot'. After model fitting, you may visualize model results via three plots."),
+                 p("This page allows for fitting a Mallows-Binomial (MB) model to rankings and ratings preference
+                 data. Select how you would like to fit the model below using the radio buttons below, and then click 
+                 'Plot' to begin estimation. After model fitting, results are visualized via three plots."),
 
                  tags$hr(),
                 verticalLayout(

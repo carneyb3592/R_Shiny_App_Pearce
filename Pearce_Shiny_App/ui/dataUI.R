@@ -3,11 +3,12 @@ dataUI <- tabPanel("Data",
                    tabsetPanel(
                        tabPanel("Upload",
                                 br(),
-                                p("On this page, we select, explore, and visualize rankings and ratings data. Get started by either selecting
-                                either a 'toy dataset' or uploading your own data (instructions below)."),
+                                p("The data tab allows you to select, display, and visualize rankings and ratings preference data. 
+                                Get started by either selecting an example data set (among three `toy` examples or real peer review data) or 
+                                uploading your own data (instructions below)."),
 
-                                h2("Toy Datasets"),
-                                p("The following three toy datasets were described and analyzed in Gallo et al. (2023). Please select from the
+                                h2("Example Data Sets"),
+                                p("The following four data sets were described and analyzed in Gallo et al. (2023). Please select from the
                                 following options."),
                                 br(),
                                 fluidRow(
@@ -16,7 +17,7 @@ dataUI <- tabPanel("Data",
                                     selectInput(
                                       "toyfile",
                                       "Choose Toy Dataset:",
-                                      choices = c("ToyData1","ToyData2","ToyData3")
+                                      choices = c("Toy Data 1"="ToyData1","Toy Data 2"="ToyData2","Toy Data 3"="ToyData3","AIBS")
                                     )
                                   ),
                                   column(
@@ -28,13 +29,13 @@ dataUI <- tabPanel("Data",
                                 tags$hr(),
                                 h2("Upload Your Own Data"),
                                 br(),
-                                p("Instead of using toy datasets, you may upload your own rankings and ratings for analysis. Each data type must be
+                                p("Instead of using example data sets, you may upload your own rankings and ratings for analysis. Each data type must be
                                   uploaded separately using the instructions below."),
                                 h3("Rankings"),
 
                                 p("Rankings should be uploaded as a .csv file, in the form of a two-dimensional array with one row per reviewer and one column per proposal.
-                                If uploading ",em("Orderings,"),"each row should contain the corresponding reviewer's ordering of proposals from best to worst. If the
-                                reviewer only provided a partial ordering, values of NA should be used to complete the row. If uploading ",em("Ranks,")," each the (i,j)
+                                If uploading ",em("Orderings,")," each row should contain the corresponding reviewer's ordering of proposals from best to worst. If the
+                                reviewer only provided a partial ordering, values of NA should be used to complete the row. If uploading ",em("Ranks,")," the (i,j)
                                 entry should contain the rank assigned by reviewer i to proposal j, where NA may be used to indicate that a proposal was not ranked."),
 
                                 fileInput(inputId = "RankingsFile", "Choose Rankings File:",
@@ -114,11 +115,13 @@ dataUI <- tabPanel("Data",
                                 uiOutput("unloadButton")
                               ),
                      tabPanel("Summary",
-                              p("Below, we view the provided rankings and ratings in tabular form. Please explore the data below and confirm correct data entry."),
+                              p("This page allows you to view rankings and ratings in tabular form. Please explore the data below and confirm correct data entry."),
                               h2("Rankings"),
+                              p("The rankings table should have one row per reviewer and one column per rank. Values in the table indicate proposal numbers; i.e., the (i,j) entry indicates the proposal assigned by reviewer i to jth place."),
                               tags$hr(),
                               DT::dataTableOutput("dataTableRank"),
                               h2("Ratings"),
+                              p("The ratings table should have one row per reviewer and one column per proposal. Values in the table indicate ratings; i.e., the (i,j) entry indicates the rating assigned by reviewer i to proposal j."),
                               tags$hr(),
                               DT::dataTableOutput("dataTableRate")
                             ),

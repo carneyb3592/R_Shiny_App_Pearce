@@ -11,7 +11,7 @@ run_model <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
   M <- reactive_data$M
-
+  
   I <- nrow(ratings)
   J <- ncol(ratings)
   R <- ncol(rankings)
@@ -20,8 +20,8 @@ run_model <- reactive({
   reactive_data$R <- R
   
   ratings_long <- melt(ratings)
-  names(ratings_long) <- c("Judge","Proposal","Rating")
-  ratings_long$Judge <- factor(ratings_long$Judge)
+  names(ratings_long) <- c("Reviewer","Proposal","Rating")
+  ratings_long$Reviewer <- factor(ratings_long$Reviewer)
   ratings_long$Proposal <- factor(ratings_long$Proposal)
   reactive_data$ratings_long <- ratings_long
   
@@ -52,7 +52,7 @@ run_model <- reactive({
                                             PointEstimate=reactive_data$point_estimate$p)
     }
   }
-
+  
   
 })
 
@@ -90,7 +90,7 @@ mb_quality_plot_input <- reactive({
 })
 MB_Quality <- eventReactive(input$plot,{
   mb_quality_plot_input()
-
+  
 })
 output$MallowsBinomialQuality <- renderPlotly({
   p <- ggplotly(MB_Quality())
@@ -128,7 +128,7 @@ output$MallowsBinomialQuality <- renderPlotly({
 
 ## Code to Generate Second MB Plot (Estimated Ranks)
 mb_rank_plot_input <- reactive({
-
+  
   if(input$CI_Included == "yes") {
     ci <- reactive_data$ci
     point_estimate <- reactive_data$point_estimate
@@ -142,7 +142,10 @@ mb_rank_plot_input <- reactive({
     
     g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate,ymin=LowerLimit,ymax=UpperLimit))+
       theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
+      scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
+                         breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylab("Estimated Rank")+
+      ggtitle("Point Estimates and 95% CI of Rank")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   } else {
     point_estimate <- reactive_data$point_estimate
@@ -153,7 +156,10 @@ mb_rank_plot_input <- reactive({
     
     g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate))+
       theme_bw(base_size=15)+geom_point(size=3)+
+      scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
+                         breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylab("Estimated Rank")+
+      ggtitle("Point Estimates of Rank")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   }
   g
@@ -194,15 +200,15 @@ mb_mean_plot_input <- reactive({
   ratings <- reactive_data$Ratings
   
   
-  results_comparison <- data.frame(Proposal=1:J,
+  results_comparison <- data.frame(Proposal=paste0("Proposal ",1:J),
                                    MeanRatings=rank(apply(ratings,2,mean),ties.method="average"),
                                    MallowsBinomial=rank(point_estimate$pi0))
   ggplot(results_comparison,aes(MallowsBinomial,MeanRatings,label=Proposal))+
     theme_bw(base_size=15)+geom_abline(slope=1,intercept=0,lty=2,color="gray")+
     geom_point(size=3)+
     geom_label_repel()+
-    labs(x="Mallows-Binomial Ranks",y="Ranks based on Mean Ratings",
-         title="Proposals by rank based on Mallows-Binomial or Mean Ratings")+
+    labs(x="Rank based on Mallows-Binomial",y="Ranks based on Mean Ratings",
+         title="Proposals by Rank based on Mallows-Binomial vs. Mean Ratings")+
     xlim(c(0.5,J+.5))+ylim(c(0.5,J+.5))+
     theme(panel.grid.minor = element_blank())
   
@@ -218,14 +224,14 @@ output$MallowsBinomialMean <- renderPlot({
 
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
-    HTML("<p style='color:red;'> (Warning, running an exact estimation may take a while)</p>")
+    HTML("<p style='color:red;'> (Warning: Running exact estimation may be slow.)</p>")
   } else {
     HTML("")
   }
 })
 output$CIWarningText <- renderText({
   if(input$CI_Included == "yes"){
-    HTML("<p style='color:red;'> (Warning, including a confidence interval will significantly add to the time.)</p>")
+    HTML("<p style='color:red;'> (Warning: Bootstrapping confidence intervals may be slow.)</p>")
   } else {
     HTML("")
   }

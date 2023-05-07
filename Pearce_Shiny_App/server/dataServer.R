@@ -40,7 +40,7 @@ observeEvent(input$upload,{
 rankings_table_input <- reactive({
   data <- as.matrix(reactive_data$Rankings)
   colnames(data) <- paste0(toOrdinal(1:ncol(data))," Place")
-  rownames(data) <- paste0("Judge ",seq(1:nrow(data)))
+  rownames(data) <- paste0("Reviewer ",seq(1:nrow(data)))
   data
 })
 
@@ -58,7 +58,7 @@ output$dataTableRank <- DT::renderDataTable(
 ratings_table_input <- reactive({
   data <- as.matrix(reactive_data$Ratings)
   colnames(data) <- paste0("Proposal ",seq(1:ncol(data)))
-  rownames(data) <- paste0("Judge ",seq(1:nrow(data)))
+  rownames(data) <- paste0("Reviewer ",seq(1:nrow(data)))
   data
 })
 
@@ -86,8 +86,8 @@ ratings_plot_input <- reactive({
   colnames(rankings) <- sub("^X", "", colnames(rankings))
   
   ratings_long <- melt(ratings)
-  names(ratings_long) <- c("Judge","Proposal","Rating")
-  ratings_long$Judge <- factor(ratings_long$Judge)
+  names(ratings_long) <- c("Reviewer","Proposal","Rating")
+  ratings_long$Reviewer <- factor(ratings_long$Reviewer)
   ratings_long$Proposal <- factor(ratings_long$Proposal)
   
   ggplot(ratings_long,aes(Proposal,Rating))+
@@ -123,8 +123,8 @@ rankings_plot_input <- reactive({
   J <- ncol(ratings)
   R <- ncol(rankings)
   rankings_long <- melt(rankings)
-  names(rankings_long) <- c("Judge","Place","Proposal")
-  rankings_long$Judge <- factor(rankings_long$Judge)
+  names(rankings_long) <- c("Reviewer","Place","Proposal")
+  rankings_long$Reviewer <- factor(rankings_long$Reviewer)
   rankings_long$Place <- factor(rankings_long$Place,
                                 levels = paste0(ncol(rankings):1),
                                 labels = toOrdinal(ncol(rankings):1))
@@ -147,9 +147,9 @@ output$RankingsPlot <- renderPlotly({
     #print(p$x$data[[i]])
     
     p$x$data[[i]]$text <- paste0(
-      p$x$data[[i]]$y, " judges put proposal ",
+      p$x$data[[i]]$y, " reviewers put proposal ",
       p$x$data[[i]]$x, "<br /> in ", p$x$data[[i]]$name,
-      " Place"
+      " place."
       
     )
   }
@@ -175,7 +175,7 @@ inconsistencies_plot_input <- reactive({
   J <- ncol(ratings)
   R <- ncol(rankings)
   
-  consistency <- data.frame(Judge=1:nrow(ratings),Kendall=NA)
+  consistency <- data.frame(Reviewer=1:nrow(ratings),Kendall=NA)
   for(i in 1:nrow(ratings)){
     kendall <- 0
     for(j1 in 1:(J-1)){for(j2 in (j1+1):J){
@@ -261,13 +261,17 @@ output$downloadInconsistencies <- downloadHandler(
 output$ToyDataDescription <- reactive({
   selectedData <- input$toyfile
   text <- switch (input$toyfile,
-    ToyData1 = "Toy Data 1 contains 3 proposals and 16 judges. 
-    The dataset demonstrates tie-breaking equally rated proposals using rankings.",
-    ToyData2 = "Toy Data 2 contains 8 proposals and 16 judges, 
-    who each only provided top-3 rankings. The dataset demonstrates improved decision-making 
+    ToyData1 = "Toy Data 1 contains 3 proposals and 16 reviewers. 
+    The data set demonstrates tie-breaking equally rated proposals using rankings.",
+    ToyData2 = "Toy Data 2 contains 8 proposals and 16 reviewers, 
+    who each only provided top-3 rankings. The data set demonstrates improved decision-making 
     even with partial rankings.",
-    ToyData3 = "Toy Data 3 contains 3 proposals and 16 judges.
-    The dataset demonstrates the ability of Mallows-Binomial to analyze data when judges
-    provide internally inconsistent sets of ratings and rankings."
+    ToyData3 = "Toy Data 3 contains 3 proposals and 16 reviewers.
+    The data set demonstrates the ability of Mallows-Binomial to analyze data when reviewers
+    provide internally inconsistent sets of ratings and rankings.",
+    AIBS = "AIBS contains real grant panel review data from the American Institute of Biological
+    Sciences (AIBS), in which 12 reviewers assessed 28 proposals using top-6 partial rankings and 
+    a 41-point rating scale. The data set demonstrates the ability of Mallows-Binomial to estimate 
+    overall preferences with uncertainty, even with partial rankings, missing data, and conflicts of interest."
   )
 })
