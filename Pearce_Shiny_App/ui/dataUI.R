@@ -12,7 +12,7 @@ dataUI <- tabPanel("Data",
                                 br(),
                                 fluidRow(
                                   column(
-                                    4,
+                                    2,
                                     selectInput(
                                       "toyfile",
                                       "Choose Toy Dataset:",
@@ -20,7 +20,7 @@ dataUI <- tabPanel("Data",
                                     )
                                   ),
                                   column(
-                                    8,
+                                    4,
                                     uiOutput("ToyDataDescription")
                                   )
                                 ),
@@ -109,11 +109,19 @@ dataUI <- tabPanel("Data",
                                   )
 
                                 ),
+                                h3("Reviewer Assignments"),
+                                p("Description Text."),
+                                fileInput("ReviewersAssignments", "Choose File:",
+                                          accept = c(
+                                            "text/csv",
+                                            "text/comma-separated-values,text/plain",
+                                            ".csv")
+                                ),
                                 uiOutput("check_data"),
                                 actionButton("upload","Upload Data", width = "150px", height= "100px", style="color: white; background-color: green; float: right"),
                                 uiOutput("unloadButton")
                               ),
-                     tabPanel("Summary",
+                     tabPanel("Data Tables",
                               p("Below, we view the provided rankings and ratings in tabular form. Please explore the data below and confirm correct data entry."),
                               h2("Rankings"),
                               tags$hr(),
@@ -122,7 +130,7 @@ dataUI <- tabPanel("Data",
                               tags$hr(),
                               DT::dataTableOutput("dataTableRate")
                             ),
-                     tabPanel("EDA",
+                     tabPanel("Exploratory Data Analysis",
                               h2("Exploratory Data Analysis"),
                               p("We provide three plots to visually summarize rankings and ratings. You may hover over the data in each plot to view additional information."),
                               sidebarLayout(position = "left",
@@ -134,8 +142,9 @@ dataUI <- tabPanel("Data",
                                 ),
                                 mainPanel(
                                   shinycssloaders::withSpinner(plotlyOutput("RatingsPlot")),
-                                  downloadButton('downloadRatings','Download Plot')
-
+                                  downloadButton('downloadRatings','Download Plot'),
+                                  downloadButton('donwloadRatingsData','Download Estimates')
+                                  
                                 )
                               ),
                               sidebarLayout(position = "left",
@@ -149,8 +158,8 @@ dataUI <- tabPanel("Data",
                                 ),
                                 mainPanel(
                                   shinycssloaders::withSpinner(plotlyOutput("RankingsPlot")),
-                                  downloadButton('downloadRankings','Download Plot')
-
+                                  downloadButton('downloadRankings','Download Plot'),
+                                  downloadButton('donwloadRankingsData','Download Estimates')
                                 )
                               ),
                               sidebarLayout(position = "left",

@@ -1,4 +1,4 @@
-MBUI <- tabPanel("MB",
+MBUI <- tabPanel("Mallows Binomial",
                  h1("Mallows-Binomial"),
                  p("On this page, we fit a Mallows-Binomial (MB) model to rankings and ratings data. Select how you would like to fit the model using the radio buttons
                  below, and then click 'Plot'. After model fitting, you may visualize model results via three plots."),
@@ -7,7 +7,7 @@ MBUI <- tabPanel("MB",
                 verticalLayout(
                   fluidRow(
                     column(
-                      2,
+                      1,
                       radioButtons(
                         label = "Estimation Method",
                         inputId = "MBEstimationMethod",
@@ -27,7 +27,7 @@ MBUI <- tabPanel("MB",
                 ),
                  fluidRow(
                    column(
-                     2,
+                     1,
                      radioButtons(
                        label = "Include C.I.?",
                        inputId = "CI_Included",
@@ -45,18 +45,42 @@ MBUI <- tabPanel("MB",
                   )
                  ),
                  actionButton("plot","Plot",width = "150px", height= "100px", style="color: white; background-color: green"),
-                 shinycssloaders::withSpinner(
-                   plotlyOutput("MallowsBinomialQuality")
+                
+                sidebarLayout(position = "left",
+                              sidebarPanel(
+                                h3("Mallows Binomial Quality"),
+                                p("Description")
+                              ),
+                              mainPanel(
+                                shinycssloaders::withSpinner(
+                                  plotlyOutput("MallowsBinomialQuality")
+                                ),
+                                downloadButton('downloadMB','Download Plot')
+                                
+                              )
                  ),
-                 downloadButton('downloadMB','Download Plot'),
-                 shinycssloaders::withSpinner(
-                   plotlyOutput("MallowsBinomialRank")
-                 ),
-                 downloadButton('downloadMBRank','Download Plot'),
-                 shinycssloaders::withSpinner(
-                   plotOutput("MallowsBinomialMean")
-                 ),
-                 downloadButton('downloadMBMean','Download Plot')
-
-
+                sidebarLayout(position = "left",
+                              sidebarPanel(
+                                h3("Mallows Binomial Rank"),
+                                p("Description")
+                              ),
+                              mainPanel(
+                                shinycssloaders::withSpinner(
+                                  plotlyOutput("MallowsBinomialRank")
+                                ),
+                                downloadButton('downloadMBRank','Download Plot'),
+                              )
+                ),
+                sidebarLayout(position = "left",
+                              sidebarPanel(
+                                h3("Mallows Binomial Mean Rankings"),
+                                p("Description")
+                              ),
+                              mainPanel(
+                                shinycssloaders::withSpinner(
+                                  plotOutput("MallowsBinomialMean")
+                                ),
+                                downloadButton('downloadMBMean','Download Plot')
+                              )
+                )
 )

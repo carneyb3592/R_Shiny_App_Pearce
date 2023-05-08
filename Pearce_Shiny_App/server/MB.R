@@ -278,6 +278,7 @@ output$downloadReport <- downloadHandler(
     paste('MBReport.pdf', sep='')
   },
   content = function(file) {
+    showModal(modalDialog("Processing Report, please wait...", footer=NULL))
     tempReport <- file.path(tempdir(),"report.Rmd")
     file.copy("report.Rmd",tempReport,overwrite = TRUE)
     params <- list(plot1=mb_quality_plot_input(),
@@ -289,6 +290,7 @@ output$downloadReport <- downloadHandler(
                       envir = new.env(parent=globalenv()),
                       
     )
+    on.exit(removeModal())
   }
 )
 
