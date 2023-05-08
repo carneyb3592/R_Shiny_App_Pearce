@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+devtools::install_github("pearce790/rankrate")
 library(rankrate)
 library(ggplot2)
 library(reshape2)
