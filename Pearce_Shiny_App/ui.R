@@ -11,7 +11,10 @@ library(shiny)
 require(shinyjs)
 library(plotly)
 library(DT)
+library(devtools)
+
 ###########  UI ELEMENTS ##################
+
 source("ui/homeUI.R",local=T)
 source("ui/dataUI.R",local=T)
 source("ui/MBUI.R",local=T)

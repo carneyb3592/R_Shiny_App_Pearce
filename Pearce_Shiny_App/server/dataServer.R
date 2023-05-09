@@ -1,8 +1,11 @@
+### Global Values ##############################################################
 reactive_data <- reactiveValues()
 reactive_data$Rankings = NULL
 reactive_data$Ratings = NULL
 reactive_data$M = NULL
+################################################################################
 
+### Set Data to Toy data #######################################################
 observeEvent(c(input$toyfile, csvdata_status$unloaded == 1),{
   if(csvdata_status$uploaded == 0){
     tmp_env <- new.env()
@@ -18,7 +21,9 @@ observeEvent(c(input$toyfile, csvdata_status$unloaded == 1),{
     reactive_data$M <- Data$M
   }
 })
+################################################################################
 
+### Set Data to Uploaded Data ##################################################
 
 observeEvent(input$upload,{
   sessionEnvir <- sys.frame()
@@ -36,13 +41,16 @@ observeEvent(input$upload,{
     reactive_data$M <- M
   }
 })
+################################################################################
 
+### Rankings Table Output ######################################################
 rankings_table_input <- reactive({
   data <- as.matrix(reactive_data$Rankings)
   colnames(data) <- paste0(toOrdinal(1:ncol(data))," Place")
   rownames(data) <- paste0("Reviewer ",seq(1:nrow(data)))
   data
 })
+
 
 output$dataTableRank <- DT::renderDataTable(
   rankings_table_input(),
@@ -55,6 +63,9 @@ output$dataTableRank <- DT::renderDataTable(
   )
 )
 
+################################################################################
+
+#### Ratings Data Output ########################################################
 ratings_table_input <- reactive({
   data <- as.matrix(reactive_data$Ratings)
   colnames(data) <- paste0("Proposal ",seq(1:ncol(data)))
@@ -73,6 +84,10 @@ output$dataTableRate <- DT::renderDataTable(
   )
 )
 
+################################################################################
+
+
+### Ratings Plot ###############################################################
 ratings_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
@@ -99,19 +114,12 @@ ratings_plot_input <- reactive({
 output$RatingsPlot <- renderPlotly({
   g <- ratings_plot_input()
   p <- ggplotly(g)
-  for (i in 1:length(p$x$data)) {
-    #print(p$x$data[[i]]$x)
-    #print(p$x$data[[i]]$y)
-    #print(p$x$data[[i]]$text)
-    print(p$x$data[[i]])
-    
-    #print(p$x$data[[i]])$hoverinfo 
-    #p$x$data[[i]]$hoverinfo = "text"
-    
-  }
   p
 })
 
+################################################################################
+
+### Rankings Plot ##############################################################
 rankings_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
@@ -128,7 +136,7 @@ rankings_plot_input <- reactive({
   rankings_long$Place <- factor(rankings_long$Place,
                                 levels = paste0(ncol(rankings):1),
                                 labels = toOrdinal(ncol(rankings):1))
-  colfunc<-colorRampPalette(c("#aa076b","#61045f"))
+  colfunc<-colorRampPalette(c("#fee0d2","#fc9272","#de2d26"))
   ggplot(rankings_long,aes(Proposal,fill=Place)) +
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
@@ -141,11 +149,6 @@ output$RankingsPlot <- renderPlotly({
   p <- ggplotly(g)
   
   for (i in 1:length(p$x$data)) {
-    #print(p$x$data[[i]]$x)
-    #print(p$x$data[[i]]$y)
-    #print(p$x$data[[i]]$text)
-    #print(p$x$data[[i]])
-    
     p$x$data[[i]]$text <- paste0(
       p$x$data[[i]]$y, " reviewers put proposal ",
       p$x$data[[i]]$x, "<br /> in ", p$x$data[[i]]$name,
@@ -163,7 +166,16 @@ reverse_legend_labels <- function(plotly_plot) {
   plotly_plot
 }
 
+output$RankingsText <- renderText({
+  if (csvdata_status$uploaded == 1){
+    return(reactive_data$M)
+  } else {
+    return(max(reactive_data$Ratings,na.rm = TRUE))
+  }
+})
+################################################################################
 
+### Inconsistencies Plot #######################################################
 inconsistencies_plot_input <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
@@ -210,11 +222,11 @@ output$InconsistenciesPlot <- renderPlotly({
   p %>% config(displayModeBar = F)
 })
 
-output$RankingsText <- renderText(
-  reactive_data$M
-)
+################################################################################
 
-##DOWNLOAD FUNCTIONS########################################################
+
+
+###DOWNLOAD FUNCTIONS###########################################################
 
 output$downloadRatings <- downloadHandler(
   filename = function() {
@@ -256,8 +268,10 @@ output$downloadInconsistencies <- downloadHandler(
            units = "px")
   }
 )
+################################################################################
 
 
+### Data Description ###########################################################
 output$ToyDataDescription <- reactive({
   selectedData <- input$toyfile
   text <- switch (input$toyfile,

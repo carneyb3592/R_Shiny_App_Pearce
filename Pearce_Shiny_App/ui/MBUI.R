@@ -56,7 +56,9 @@ MBUI <- tabPanel("Mallows Binomial",
                                 shinycssloaders::withSpinner(
                                   plotlyOutput("MallowsBinomialQuality")
                                 ),
-                                downloadButton('downloadMB','Download Plot')
+                                downloadButton('downloadMB','Download Plot'),
+                                downloadButton('donwloadMBQualData','Download Data')
+                                
                                 
                               )
                  ),
@@ -70,6 +72,8 @@ MBUI <- tabPanel("Mallows Binomial",
                                   plotlyOutput("MallowsBinomialRank")
                                 ),
                                 downloadButton('downloadMBRank','Download Plot'),
+                                downloadButton('donwloadMBRankData','Download Data')
+                                
                               )
                 ),
                 sidebarLayout(position = "left",

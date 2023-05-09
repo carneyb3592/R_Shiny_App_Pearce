@@ -145,9 +145,8 @@ dataUI <- tabPanel("Data",
                                 ),
                                 mainPanel(
                                   shinycssloaders::withSpinner(plotlyOutput("RatingsPlot")),
-                                  downloadButton('downloadRatings','Download Plot'),
-                                  downloadButton('donwloadRatingsData','Download Estimates')
-                                  
+                                  downloadButton('downloadRatings','Download Plot')
+
                                 )
                               ),
                               sidebarLayout(position = "left",
@@ -161,8 +160,7 @@ dataUI <- tabPanel("Data",
                                 ),
                                 mainPanel(
                                   shinycssloaders::withSpinner(plotlyOutput("RankingsPlot")),
-                                  downloadButton('downloadRankings','Download Plot'),
-                                  downloadButton('donwloadRankingsData','Download Estimates')
+                                  downloadButton('downloadRankings','Download Plot')
                                 )
                               ),
                               sidebarLayout(position = "left",

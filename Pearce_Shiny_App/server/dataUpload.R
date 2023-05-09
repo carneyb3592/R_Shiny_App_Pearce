@@ -6,7 +6,6 @@ csvdata_status$unloaded <- 0
 check_data_message <- eventReactive(input$upload,{
   csvdata_status$uploaded <- 1
   csvdata_status$unloaded <- 0
-  return("<p>Succesful upload!</p>")
 })
 
 output$check_data <- renderUI({

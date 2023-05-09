@@ -1,3 +1,5 @@
+### Global Values ##############################################################
+
 reactive_data$ci <- NULL
 reactive_data$point_estimate <- NULL
 reactive_data$results_p <- NULL
@@ -6,7 +8,10 @@ reactive_data$I <- NULL
 reactive_data$J <- NULL
 reactive_data$R <- NULL
 
-## Code to Run Model
+################################################################################
+
+
+### Code to Run Model ##########################################################
 run_model <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
@@ -77,8 +82,9 @@ run_model <- reactive({
   
   
 })
+################################################################################
 
-## Code to Generate First MB Plot (Integrated Scores)
+## Code to Generate First MB Plot (Integrated Scores) ##########################
 mb_quality_plot_input <- reactive({
   run_model()
   
@@ -147,8 +153,10 @@ output$MallowsBinomialQuality <- renderPlotly({
     )
   )
 })
+################################################################################
 
-## Code to Generate Second MB Plot (Estimated Ranks)
+
+## Code to Generate Second MB Plot (Estimated Ranks) ###########################
 mb_rank_plot_input <- reactive({
   
   if(input$CI_Included == "yes") {
@@ -211,7 +219,9 @@ output$MallowsBinomialRank <- renderPlotly({
   p
 })
 
-## Code to Generate Third MB Plot (MB vs. MR Ranks)
+################################################################################
+
+## Code to Generate Third MB Plot (MB vs. MR Ranks) ############################
 mb_mean_plot_input <- reactive({
   
   point_estimate <- reactive_data$point_estimate
@@ -241,8 +251,9 @@ MB_Mean <- eventReactive(input$plot,{
 output$MallowsBinomialMean <- renderPlot({
   MB_Mean()
 })
+################################################################################
 
-
+### Warnings Text ##############################################################
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
     HTML("<p style='color:red;'> (Warning: Running exact estimation may be slow.)</p>")
@@ -258,6 +269,9 @@ output$CIWarningText <- renderText({
   }
 })
 
+################################################################################
+
+### Download Functions #########################################################
 output$downloadMB <- downloadHandler(
   filename = function() {
     paste('MBQuality.png', sep='')
@@ -300,24 +314,4 @@ output$downloadMBMean <- downloadHandler(
   }
 )
 
-output$downloadReport <- downloadHandler(
-  filename = function() {
-    paste('MBReport.pdf', sep='')
-  },
-  content = function(file) {
-    showModal(modalDialog("Processing Report, please wait...", footer=NULL))
-    tempReport <- file.path(tempdir(),"report.Rmd")
-    file.copy("report.Rmd",tempReport,overwrite = TRUE)
-    params <- list(plot1=mb_quality_plot_input(),
-                   plot2=mb_mean_plot_input(),
-                   plot3=mb_rank_plot_input())
-    rmarkdown::render(tempReport,output_file = file,
-                      output_format = "pdf_document",
-                      params = params,
-                      envir = new.env(parent=globalenv()),
-                      
-    )
-    on.exit(removeModal())
-  }
-)
-
+################################################################################
