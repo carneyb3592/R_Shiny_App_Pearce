@@ -43,6 +43,24 @@ MBUI <- tabPanel("Mallows Binomial",
                      4,
                      htmlOutput("CIWarningText")
                    )
+                  ),
+                  fluidRow(
+                    column(
+                      2,
+                      textInput(
+                        "confidencelevel",
+                        "Confidence Level",
+                        value = 1
+                      )
+                    ),
+                    column(
+                        4,
+                        textInput(
+                          "bootstrapsample",
+                          "Bootstrap Samples",
+                          value = 1
+                        )
+                      )
                   )
                  ),
                  actionButton("plot","Plot",width = "150px", height= "100px", style="color: white; background-color: green"),
