@@ -12,6 +12,7 @@ library(DT)
 library(ggrepel)
 library(latexpdf)
 library(knitr)
+library(shinyalert)
 
 # Define server logic
 function(input, output, session) {

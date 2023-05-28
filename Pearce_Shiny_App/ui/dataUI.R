@@ -65,11 +65,11 @@ dataUI <- tabPanel("Data",
                                         label = "Seperator",
                                         inputId = "RankingsFileDataSeperator",
                                         choices = c(
-                                          "Comma" = "comma",
-                                          "Semicolon" = "semicolon",
-                                          "Tab" = "tab"
+                                          "Comma" = ",",
+                                          "Semicolon" = ";",
+                                          "Tab" = "\t"
                                         ),
-                                        selected = "comma"
+                                        selected = ","
                                       )
                                     )
 
@@ -101,11 +101,11 @@ dataUI <- tabPanel("Data",
                                       label = "Seperator",
                                       inputId = "RatingsFileDataSeperator",
                                       choices = c(
-                                        "Comma" = "comma",
-                                        "Semicolon" = "semicolon",
-                                        "Tab" = "tab"
+                                        "Comma" = ",",
+                                        "Semicolon" = ";",
+                                        "Tab" = "\t"
                                       ),
-                                      selected = "comma"
+                                      selected = ","
                                     )
                                   )
 
@@ -118,7 +118,6 @@ dataUI <- tabPanel("Data",
                                             "text/comma-separated-values,text/plain",
                                             ".csv")
                                 ),
-                                uiOutput("check_data"),
                                 actionButton("upload","Upload Data", width = "150px", height= "100px", style="color: white; background-color: green; float: right"),
                                 uiOutput("unloadButton")
                               ),

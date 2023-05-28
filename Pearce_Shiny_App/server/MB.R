@@ -7,6 +7,7 @@ reactive_data$ratings_long <- NULL
 reactive_data$I <- NULL
 reactive_data$J <- NULL
 reactive_data$R <- NULL
+reactive_data$results_rankCI <- NULL
 
 ################################################################################
 
@@ -168,6 +169,7 @@ mb_rank_plot_input <- reactive({
     results_rankCI <- data.frame(Proposal=1:J,RankEstimate = point_estimate$rank,
                                  LowerLimit=ci$ci_ranks[1,1:J],
                                  UpperLimit=ci$ci_ranks[2,1:J])
+    reactive_data$results_rankCI <- results_rankCI
     
     g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate,ymin=LowerLimit,ymax=UpperLimit))+
       theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
@@ -182,7 +184,7 @@ mb_rank_plot_input <- reactive({
     J <- reactive_data$J
     R <- reactive_data$R
     results_rankCI <- data.frame(Proposal=1:J,RankEstimate = point_estimate$rank)
-    
+    reactive_data$results_rankCI <- results_rankCI
     g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate))+
       theme_bw(base_size=15)+geom_point(size=3)+
       scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
@@ -313,5 +315,25 @@ output$downloadMBMean <- downloadHandler(
            units = "px")
   }
 )
+
+output$donwloadMBQualData <- downloadHandler(
+  filename = function() {
+    paste('MBQualData.csv', sep='')
+  },
+  content = function(file){
+    write.csv(reactive_data$results_p,file)
+  }
+)
+
+output$donwloadMBRankData <- downloadHandler(
+  filename = function() {
+    paste('MBRankData.csv', sep='')
+  },
+  content = function(file){
+    write.csv(reactive_data$results_rankCI,file)
+  }
+)
+
+
 
 ################################################################################

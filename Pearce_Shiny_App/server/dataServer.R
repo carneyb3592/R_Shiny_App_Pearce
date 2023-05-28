@@ -1,46 +1,6 @@
 ### Global Values ##############################################################
 reactive_data <- reactiveValues()
-reactive_data$Rankings = NULL
-reactive_data$Ratings = NULL
-reactive_data$M = NULL
-################################################################################
 
-### Set Data to Toy data #######################################################
-observeEvent(c(input$toyfile, csvdata_status$unloaded == 1),{
-  if(csvdata_status$uploaded == 0){
-    tmp_env <- new.env()
-    fileName <- paste(input$toyfile,".RData",sep = "")
-    myfile <- file.path("server",fileName)
-    Data <- load(myfile, tmp_env)
-    if(length(Data)==1)
-      Data <- tmp_env[[Data]]
-    else
-      Data <- NULL
-    reactive_data$Ratings <- Data$ratings
-    reactive_data$Rankings <- Data$rankings
-    reactive_data$M <- Data$M
-  }
-})
-################################################################################
-
-### Set Data to Uploaded Data ##################################################
-
-observeEvent(input$upload,{
-  sessionEnvir <- sys.frame()
-  if (!is.null(input$RankingsFile) && !is.null(input$RatingsFile)){
-    ratings = as.matrix(read.csv(input$RatingsFile$datapath))
-    rankings = as.matrix(read.csv(input$RankingsFile$datapath))
-    colnames(rankings) <- sub("^X", "", colnames(rankings))
-    colnames(ratings) <- sub("^X", "", colnames(ratings))
-    
-    M <- as.numeric(input$RatingsMValue)
-    
-    
-    reactive_data$Ratings <- ratings
-    reactive_data$Rankings <- rankings
-    reactive_data$M <- M
-  }
-})
 ################################################################################
 
 ### Rankings Table Output ######################################################
