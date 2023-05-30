@@ -45,7 +45,7 @@ run_model <- reactive({
       reactive_data$point_estimate$rank <- order(reactive_data$point_estimate$pi0)
     }
     if(input$CI_Included == "yes") {
-      ci <- ci_mb(rankings=rankings,ratings=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="ASTAR")
+      ci <- ci_mb(rankings=rankings,ratings=ratings,M=M,nsamples=input$bootstrapsample,interval=input$confidencelevel,all=TRUE,method="ASTAR")
       reactive_data$ci <- ci
       reactive_data$results_p <- data.frame(Proposal=1:J,
                                             PointEstimate=reactive_data$point_estimate$p,
@@ -69,7 +69,7 @@ run_model <- reactive({
       reactive_data$point_estimate$rank <- order(reactive_data$point_estimate$pi0)
     }
     if(input$CI_Included == "yes") {
-      ci <- ci_mb(rankings=rankings,ratings=ratings,M=M,nsamples=20,interval=0.95,all=TRUE,method="Greedy")
+      ci <- ci_mb(rankings=rankings,ratings=ratings,M=M,nsamples=input$bootstrapsample,interval=input$confidencelevel,all=TRUE,method="Greedy")
       reactive_data$ci <- ci
       reactive_data$results_p <- data.frame(Proposal=1:J,
                                             PointEstimate=reactive_data$point_estimate$p,
@@ -103,7 +103,6 @@ mb_quality_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_p$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylim(c(0,1))+ylab("Integrated Score")+
-      ggtitle("Point Estimates and 95% CI of Quality")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   } else {
     results_p <- reactive_data$results_p
@@ -112,7 +111,6 @@ mb_quality_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_p$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylim(c(0,1))+ylab("Integrated Score")+
-      ggtitle("Point Estimates of Quality")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   }
   g
@@ -176,7 +174,6 @@ mb_rank_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylab("Estimated Rank")+
-      ggtitle("Point Estimates and 95% CI of Rank")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   } else {
     point_estimate <- reactive_data$point_estimate
@@ -190,7 +187,6 @@ mb_rank_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylab("Estimated Rank")+
-      ggtitle("Point Estimates of Rank")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   }
   g
@@ -265,7 +261,7 @@ output$EstimationWarningText <- renderText({
 })
 output$CIWarningText <- renderText({
   if(input$CI_Included == "yes"){
-    HTML("<p style='color:red;'> (Warning: Bootstrapping confidence intervals may be slow.)</p>")
+    HTML("<p style='color:red;'> (Warning: Bootstrapped confidence intervals may be slow.)</p>")
   } else {
     HTML("")
   }

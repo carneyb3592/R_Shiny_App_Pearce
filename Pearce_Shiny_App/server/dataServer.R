@@ -90,17 +90,18 @@ rankings_plot_input <- reactive({
   I <- nrow(ratings)
   J <- ncol(ratings)
   R <- ncol(rankings)
+  for(i in 1:ncol(rankings)){if(all(is.na(rankings[,i]))){R <- i-1;break()}}
   rankings_long <- melt(rankings)
   names(rankings_long) <- c("Reviewer","Place","Proposal")
   rankings_long$Reviewer <- factor(rankings_long$Reviewer)
   rankings_long$Place <- factor(rankings_long$Place,
-                                levels = paste0(ncol(rankings):1),
-                                labels = toOrdinal(ncol(rankings):1))
-  colfunc<-colorRampPalette(c("#e5f5e0","#a1d99b","#31a354"))
+                                levels = paste0(R:1),
+                                labels = toOrdinal(R:1))
+  colfunc<-colorRampPalette(c("#e5f5e0","#31a354"))
   ggplot(rankings_long,aes(Proposal,fill=Place)) +
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
-    scale_fill_manual(values=colfunc(max(rankings,na.rm=T)))+ylab("Count")+
+    scale_fill_manual(values=colfunc(R))+ylab("Count")+
     theme(panel.grid = element_blank(),legend.position = "bottom") + scale_x_continuous(breaks = 1:J)
 })
 
@@ -130,7 +131,7 @@ output$RankingsText <- renderText({
   if (csvdata_status$uploaded == 1){
     return(reactive_data$M)
   } else {
-    return(max(reactive_data$Ratings,na.rm = TRUE))
+    return(reactive_data$M)
   }
 })
 ################################################################################

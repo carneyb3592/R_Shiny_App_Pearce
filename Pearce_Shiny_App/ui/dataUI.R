@@ -3,17 +3,15 @@ dataUI <- tabPanel("Data",
                    tabsetPanel(
                        tabPanel("Upload",
                                 br(),
-                                p("The data tab allows you to select, display, and visualize rankings and ratings preference data. 
-                                Get started by either selecting an example data set (among three `toy` examples or real peer review data) or 
-                                uploading your own data (instructions below)."),
+                                p("The data tab allows you to select, display, and visualize rankings and ratings. 
+                                Get started by either selecting an example dataset or uploading your own data (instructions below)."),
 
                                 h2("Example Data Sets"),
-                                p("The following four data sets were described and analyzed in Gallo et al. (2023). Please select from the
-                                following options."),
+                                p("The following four data sets were described and analyzed in",a(href="https://www.researchsquare.com/article/rs-2198949/v1","Gallo et al. (2023)."),"Please select from the following options."),
                                 br(),
                                 fluidRow(
                                   column(
-                                    2,
+                                    3,
                                     selectInput(
                                       "toyfile",
                                       "Choose Toy Dataset:",
@@ -21,7 +19,7 @@ dataUI <- tabPanel("Data",
                                     )
                                   ),
                                   column(
-                                    4,
+                                    8,
                                     uiOutput("ToyDataDescription")
                                   )
                                 ),
@@ -29,7 +27,7 @@ dataUI <- tabPanel("Data",
                                 tags$hr(),
                                 h2("Upload Your Own Data"),
                                 br(),
-                                p("Instead of using example data sets, you may upload your own rankings and ratings for analysis. Each data type must be
+                                p("You may upload your own rankings and ratings for analysis. Rankings, ratings, and reviewer assignments (if applicable) must be
                                   uploaded separately using the instructions below."),
                                 h3("Rankings"),
 
@@ -111,7 +109,8 @@ dataUI <- tabPanel("Data",
 
                                 ),
                                 h3("Reviewer Assignments"),
-                                p("Description Text."),
+                                p("If applicable, reviewer assignments should be uploaded as a .csv file, in the form of a two-dimensional array with one row per reviewer and one column per proposal.
+                                  The (i,j) entry should contain a boolean (TRUE or FALSE) indicating if reviewer i was assigned to review proposal j. If all reviewers assessed all proposals, no file need be uploaded."),
                                 fileInput("ReviewersAssignments", "Choose File:",
                                           accept = c(
                                             "text/csv",
@@ -122,7 +121,7 @@ dataUI <- tabPanel("Data",
                                 uiOutput("unloadButton")
                               ),
                      tabPanel("Data Tables",
-                              p("Below, we view the provided rankings and ratings in tabular form. Please explore the data below and confirm correct data entry."),
+                              p("Below, we display rankings and ratings in tabular form. Please explore the data below and confirm correct data entry."),
                               h2("Rankings"),
                               p("The rankings table should have one row per reviewer and one column per rank. Values in the table indicate proposal numbers; i.e., the (i,j) entry indicates the proposal assigned by reviewer i to jth place."),
                               tags$hr(),
@@ -138,8 +137,8 @@ dataUI <- tabPanel("Data",
                               sidebarLayout(position = "left",
                                 sidebarPanel(
                                   h3("Ratings by Proposal"),
-                                  p("The first plot displays side-by-side boxplots of ratings assigned to each proposal. The
-                                  x-axis displays proposals in numerical order and the y-asix displays ratings from best (0)
+                                  p("We first display side-by-side boxplots of ratings assigned to each proposal. The
+                                  x-axis contains proposals in numerical order and the y-axis displays ratings from best (0)
                                     to worst ( M = ",textOutput("RankingsText",inline=TRUE),"). Hover over each boxplot for more information.",sep="")
                                 ),
                                 mainPanel(
@@ -151,8 +150,8 @@ dataUI <- tabPanel("Data",
                               sidebarLayout(position = "left",
                                 sidebarPanel(
                                   h3("Rankings Figure"),
-                                  p("The second plot displays stacked barcharts of the ranks
-                                    assigned to each proposal. The x-axis displays proposals
+                                  p("The second plot displays stacked barcharts of ranks
+                                    assigned to each proposal. The x-axis contains proposals
                                     in numerical order and the y-axis displays counts.
                                     Different rank levels are indicated using colors.
                                     Hover over each bar for more information.")
@@ -165,11 +164,12 @@ dataUI <- tabPanel("Data",
                               sidebarLayout(position = "left",
                                 sidebarPanel(
                                   h3("Inconsistencies"),
-                                  p(" The third plot displays a histogram of reviewer-level inconsistencies.
-                                    Here, inconsistency is defined as the total number of unique object pairs
-                                    for which their ordering in a judge's ranking does not match their implied ordering by
-                                    a judge's ratings. We do not count pairs in which the order of objects cannot be inferred
-                                    based on ratings or rankings (e.g., due to missing data or rating ties). A value of 0 indicates a judge
+                                  p("The third plot displays a histogram of reviewer-level inconsistencies.
+                                  Inconsistency is defined as the total number of unique object pairs in which their order
+                                  in the judge's ranking does not the order of their scores.
+                                  We do not count pairs in which the order of objects cannot be inferred
+                                    based on ratings or rankings (e.g., due to missing data or rating ties). 
+                                    A value of 0 indicates a judge
                                     whose ratings were internally consistent with his/her ranking.")
                                 ),
                                 mainPanel(
