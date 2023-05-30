@@ -12,7 +12,7 @@ homeUI <- tabPanel("Home",
                    ),
                    h2("Feedback"),
                    p('If you discover any issues when working with this tool, please write to',a(href="mailto:mpp790@uw.edu","mpp790@uw.edu"),'or use', a(href="https://github.com/carneyb3592/R_Shiny_App_Pearce","Github.")),
-                   h2("Funding"),
-                   p("This project was supported by the National Science Foundation under Grant No. 2019901.")
+                   h2("Acknowledgement and Funding"),
+                   p("This project was supported by the National Science Foundation under Grant No. 2019901. We would like to thank Ben Carney, the principal software developer of this package.")
 
 )
