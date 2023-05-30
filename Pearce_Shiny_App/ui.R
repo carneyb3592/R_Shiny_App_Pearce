@@ -11,7 +11,10 @@ library(shiny)
 require(shinyjs)
 library(plotly)
 library(DT)
+library(devtools)
+
 ###########  UI ELEMENTS ##################
+
 source("ui/homeUI.R",local=T)
 source("ui/dataUI.R",local=T)
 source("ui/MBUI.R",local=T)
@@ -22,14 +25,12 @@ source("ui/reportUI.R",local=T)
 
 shinyUI(
   tagList(
-    
-  
-  tags$head(
-    tags$link(
-      rel = "stylesheet",
-      type = "text/css",
-      href = "style.css"
-    )
+    tags$head(
+      tags$link(
+        rel = "stylesheet",
+        type = "text/css",
+        href = "style.css"
+      )
   ),
     navbarPage(collapsible=TRUE,
                title=div(img(src="rankrate_logo.png",

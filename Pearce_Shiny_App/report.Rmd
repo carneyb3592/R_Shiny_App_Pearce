@@ -5,15 +5,47 @@ params:
   plot1: NA
   plot2: NA
   plot3: NA
+  plot4: NA
+  plot5: NA
+  plot6: NA
+  plotlist: NA
 ---
 
-```{r}
-plot(params$plot1)
+```{r echo=FALSE, comment=NA}
+if("RateBP" %in% params$plotlist){
+  plot(params$plot1)
+  cat("This plot displays side-by-side boxplots of ratings assigned to each proposal.\nThe x-axis displays proposals in numerical order and the y-asix displays ratings from best to worst.")
+}
+
+
+if("RankBP" %in% params$plotlist){
+  plot(params$plot2)
+  cat("This plot displays stacked barcharts of the ranks assigned to each proposal.\nThe x-axis displays proposals in   numerical order and the y-axis displays counts.\nDifferent rank levels are indicated using colors.")
+}
+
+
+if("Incon" %in% params$plotlist){
+  plot(params$plot3)
+  cat("This plot displays a histogram of reviewer-level inconsistencies. Here, inconsistency is defined \nas the total number of unique object pairs for which their ordering in a judge's ranking does\nnot match their implied ordering by a judge's ratings. We do not count pairs in which the order\nof objects cannot beinferred based on ratings or rankings (e.g., due to missing data or rating ties).\nA value of 0 indicates a judge whose ratings were internally consistent with his/her ranking.")
+}
+
+
+if("MBQual" %in% params$plotlist){
+  plot(params$plot4)
+  cat("Description")
+}
+
+
+if("MBRank" %in% params$plotlist){
+  plot(params$plot5)
+  cat("Description")
+}
+
+
+if("MBMean" %in% params$plotlist){
+  plot(params$plot6)
+  cat("Description")
+}
+
+
 ```
-```{r}
-plot(params$plot2)
-```
-```{r}
-plot(params$plot3)
-```
-This is a test report

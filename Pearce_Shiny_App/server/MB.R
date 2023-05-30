@@ -1,3 +1,5 @@
+### Global Values ##############################################################
+
 reactive_data$ci <- NULL
 reactive_data$point_estimate <- NULL
 reactive_data$results_p <- NULL
@@ -5,8 +7,12 @@ reactive_data$ratings_long <- NULL
 reactive_data$I <- NULL
 reactive_data$J <- NULL
 reactive_data$R <- NULL
+reactive_data$results_rankCI <- NULL
 
-## Code to Run Model
+################################################################################
+
+
+### Code to Run Model ##########################################################
 run_model <- reactive({
   rankings <- reactive_data$Rankings
   ratings <- reactive_data$Ratings
@@ -77,8 +83,9 @@ run_model <- reactive({
   
   
 })
+################################################################################
 
-## Code to Generate First MB Plot (Integrated Scores)
+## Code to Generate First MB Plot (Integrated Scores) ##########################
 mb_quality_plot_input <- reactive({
   run_model()
   
@@ -147,8 +154,10 @@ output$MallowsBinomialQuality <- renderPlotly({
     )
   )
 })
+################################################################################
 
-## Code to Generate Second MB Plot (Estimated Ranks)
+
+## Code to Generate Second MB Plot (Estimated Ranks) ###########################
 mb_rank_plot_input <- reactive({
   
   if(input$CI_Included == "yes") {
@@ -160,6 +169,7 @@ mb_rank_plot_input <- reactive({
     results_rankCI <- data.frame(Proposal=1:J,RankEstimate = point_estimate$rank,
                                  LowerLimit=ci$ci_ranks[1,1:J],
                                  UpperLimit=ci$ci_ranks[2,1:J])
+    reactive_data$results_rankCI <- results_rankCI
     
     g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate,ymin=LowerLimit,ymax=UpperLimit))+
       theme_bw(base_size=15)+geom_errorbar()+geom_point(size=3)+
@@ -174,7 +184,7 @@ mb_rank_plot_input <- reactive({
     J <- reactive_data$J
     R <- reactive_data$R
     results_rankCI <- data.frame(Proposal=1:J,RankEstimate = point_estimate$rank)
-    
+    reactive_data$results_rankCI <- results_rankCI
     g <- ggplot(results_rankCI,aes(Proposal,y=RankEstimate))+
       theme_bw(base_size=15)+geom_point(size=3)+
       scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
@@ -211,7 +221,9 @@ output$MallowsBinomialRank <- renderPlotly({
   p
 })
 
-## Code to Generate Third MB Plot (MB vs. MR Ranks)
+################################################################################
+
+## Code to Generate Third MB Plot (MB vs. MR Ranks) ############################
 mb_mean_plot_input <- reactive({
   
   point_estimate <- reactive_data$point_estimate
@@ -241,8 +253,9 @@ MB_Mean <- eventReactive(input$plot,{
 output$MallowsBinomialMean <- renderPlot({
   MB_Mean()
 })
+################################################################################
 
-
+### Warnings Text ##############################################################
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
     HTML("<p style='color:red;'> (Warning: Running exact estimation may be slow.)</p>")
@@ -258,6 +271,9 @@ output$CIWarningText <- renderText({
   }
 })
 
+################################################################################
+
+### Download Functions #########################################################
 output$downloadMB <- downloadHandler(
   filename = function() {
     paste('MBQuality.png', sep='')
@@ -300,22 +316,24 @@ output$downloadMBMean <- downloadHandler(
   }
 )
 
-output$downloadReport <- downloadHandler(
+output$donwloadMBQualData <- downloadHandler(
   filename = function() {
-    paste('MBReport.pdf', sep='')
+    paste('MBQualData.csv', sep='')
   },
-  content = function(file) {
-    tempReport <- file.path(tempdir(),"report.Rmd")
-    file.copy("report.Rmd",tempReport,overwrite = TRUE)
-    params <- list(plot1=mb_quality_plot_input(),
-                   plot2=mb_mean_plot_input(),
-                   plot3=mb_rank_plot_input())
-    rmarkdown::render(tempReport,output_file = file,
-                      output_format = "pdf_document",
-                      params = params,
-                      envir = new.env(parent=globalenv()),
-                      
-    )
+  content = function(file){
+    write.csv(reactive_data$results_p,file)
   }
 )
 
+output$donwloadMBRankData <- downloadHandler(
+  filename = function() {
+    paste('MBRankData.csv', sep='')
+  },
+  content = function(file){
+    write.csv(reactive_data$results_rankCI,file)
+  }
+)
+
+
+
+################################################################################

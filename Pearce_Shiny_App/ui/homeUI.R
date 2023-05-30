@@ -15,5 +15,4 @@ homeUI <- tabPanel("Home",
                    h2("Funding"),
                    p("This project was supported by the National Science Foundation under Grant No. 2019901.")
 
-
 )

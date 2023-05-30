@@ -8,6 +8,7 @@
   height: 75px;
   width: 150px;
   padding-top: 25px;
+  display: flex;
   font-size: large;
   text-align: center;
   align-items: center;
