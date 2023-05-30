@@ -1,5 +1,5 @@
 ---
-title: "report"
+title: "Peer Review with Rankings and Ratings: Report"
 output: pdf_document
 params:
   plot1: NA
@@ -11,10 +11,12 @@ params:
   plotlist: NA
 ---
 
-```{r echo=FALSE, comment=NA}
+This report contains the user-selected results figures from the Peer Review with Rankings and Ratings RShiny application.
+
+```{r echo=FALSE, comment=NA, warnings=FALSE,message=FALSE}
 if("RateBP" %in% params$plotlist){
   plot(params$plot1)
-  cat("This plot displays side-by-side boxplots of ratings assigned to each proposal.\nThe x-axis displays proposals in numerical order and the y-asix displays ratings from best to worst.")
+  cat("This plot displays side-by-side boxplots of ratings assigned to each proposal.\nThe x-axis displays proposals in numerical order and the y-axis displays ratings from best to worst.")
 }
 
 
@@ -26,25 +28,25 @@ if("RankBP" %in% params$plotlist){
 
 if("Incon" %in% params$plotlist){
   plot(params$plot3)
-  cat("This plot displays a histogram of reviewer-level inconsistencies. Here, inconsistency is defined \nas the total number of unique object pairs for which their ordering in a judge's ranking does\nnot match their implied ordering by a judge's ratings. We do not count pairs in which the order\nof objects cannot beinferred based on ratings or rankings (e.g., due to missing data or rating ties).\nA value of 0 indicates a judge whose ratings were internally consistent with his/her ranking.")
+  cat("This plot displays a histogram of reviewer-level inconsistencies. Inconsistency \n is defined as the total number of unique object pairs in which their order \n in the judge's ranking does not the order of their scores. We do not count pairs \n in which the order of objects cannot be inferred based on ratings or rankings (e.g., \ndue to missing data or rating ties). A value of 0 indicates a judge whose \nratings were internally consistent with his/her ranking.")
 }
 
 
 if("MBQual" %in% params$plotlist){
   plot(params$plot4)
-  cat("Description")
+  cat("This plot displays estimates of proposal quality on the unit interval, based on the \nMallows-Binomial model. Here, estimated proposal quality is identical to the 'integrated score' \nof the proposal, as defined in Gallo et al. (2023).")
 }
 
 
 if("MBRank" %in% params$plotlist){
   plot(params$plot5)
-  cat("Description")
+  cat("This plot displays estimates of the overall proposal rank, based on the Mallows-Binomial model.")
 }
 
 
 if("MBMean" %in% params$plotlist){
   plot(params$plot6)
-  cat("Description")
+  cat("This plot allows for direct comparison of estimated ranks by proposal between the \nMallows-Binomial model (x-axis) and the ranks based solely on ordering proposals by their \nmean rating (y-axis). The dotted line on the main diagonal represents equivalent results\n between models.")
 }
 
 
