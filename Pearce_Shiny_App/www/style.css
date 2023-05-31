@@ -1,8 +1,9 @@
 .navbar {
   min-height: 75px;
   margin-bottom: 20px;
-  border: 1px solid transparent;
+  background-color: #17252A;
 }
+
 
 .navbar-nav > li > a {
   height: 75px;
@@ -13,4 +14,36 @@
   text-align: center;
   align-items: center;
   justify-content: center;
+  color: white;
+
+}
+.navbar-nav > li > a:hover {
+  color: #3AAFA9;
+}
+
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+  color: white;
+  background-color: #3AAFA9;
+}
+
+.navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
+  color: #3AAFA9;
+}
+
+.navbar-default .navbar-brand {
+  color: white;
+}
+
+
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover {
+  color: #3AAFA9;
+}
+
+.navbar-default .navbar-nav>li>a {
+  color: white;
+}
+
+.navbar-default {
+  border: none;
 }

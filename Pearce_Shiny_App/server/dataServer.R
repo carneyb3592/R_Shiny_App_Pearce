@@ -97,7 +97,7 @@ rankings_plot_input <- reactive({
   rankings_long$Place <- factor(rankings_long$Place,
                                 levels = paste0(R:1),
                                 labels = toOrdinal(R:1))
-  colfunc<-colorRampPalette(c("#e5f5e0","#31a354"))
+  colfunc<-colorRampPalette(c("#def2f1","#3AAFA9"))
   ggplot(rankings_long,aes(Proposal,fill=Place)) +
     theme_bw(base_size=15)+geom_bar()+
     ggtitle("Rankings by Proposal")+
