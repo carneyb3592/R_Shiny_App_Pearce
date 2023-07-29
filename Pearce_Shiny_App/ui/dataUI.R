@@ -7,7 +7,7 @@ dataUI <- tabPanel("Data",
                                 Get started by either selecting an example dataset or uploading your own data (instructions below)."),
 
                                 h2("Example Data Sets"),
-                                p("The following four data sets were described and analyzed in",a(href="https://www.researchsquare.com/article/rs-2198949/v1","Gallo et al. (2023)."),"Please select from the following options."),
+                                p("The following four data sets were described and analyzed in",a(href="https://researchintegrityjournal.biomedcentral.com/articles/10.1186/s41073-023-00131-7","Gallo et al. (2023)."),"Please select from the following options."),
                                 br(),
                                 fluidRow(
                                   column(
@@ -60,7 +60,7 @@ dataUI <- tabPanel("Data",
                                     column(
                                       2,
                                       radioButtons(
-                                        label = "Seperator",
+                                        label = "Separator",
                                         inputId = "RankingsFileDataSeperator",
                                         choices = c(
                                           "Comma" = ",",
@@ -162,15 +162,30 @@ dataUI <- tabPanel("Data",
                                 )
                               ),
                               sidebarLayout(position = "left",
+                                            sidebarPanel(
+                                              h3("Proposal-Level Inconsistencies"),
+                                              p("The fourth plot displays a histogram of proposal-level inconsistencies.
+                                  Inconsistency is defined as the total number of unique objects in which their order differs
+                                  between rankings and ratings, summed across all judges. As before, we do not count pairs 
+                                  in which the order of objects cannot be inferred
+                                    based on ratings or rankings (e.g., due to missing data or rating ties). ")
+                                            ),
+                                            mainPanel(
+                                              shinycssloaders::withSpinner(plotlyOutput("InconsistenciesProposalPlot")),
+                                              downloadButton('downloadInconsistenciesProposal','Download Plot')
+                                              
+                                            )
+                              ),
+                              sidebarLayout(position = "left",
                                 sidebarPanel(
-                                  h3("Inconsistencies"),
+                                  h3("Reviewer-Level Inconsistencies"),
                                   p("The third plot displays a histogram of reviewer-level inconsistencies.
                                   Inconsistency is defined as the total number of unique object pairs in which their order
                                   in the judge's ranking does not the order of their scores.
                                   We do not count pairs in which the order of objects cannot be inferred
                                     based on ratings or rankings (e.g., due to missing data or rating ties). 
                                     A value of 0 indicates a judge
-                                    whose ratings were internally consistent with his/her ranking.")
+                                    whose ratings were internally consistent with his/her ranking. Only judges who provided a ranking are displayed.")
                                 ),
                                 mainPanel(
                                   shinycssloaders::withSpinner(plotlyOutput("InconsistenciesPlot")),

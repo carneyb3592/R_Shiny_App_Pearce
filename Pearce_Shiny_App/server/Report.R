@@ -4,9 +4,10 @@ getParams <- reactive({
   return(list(plot1=ratings_plot_input(),
                plot2=rankings_plot_input(),
                plot3=inconsistencies_plot_input(),
-               plot4=mb_quality_plot_input(),
-               plot5=mb_rank_plot_input(),
-               plot6=mb_mean_plot_input(),
+               plot4=inconsistenciesproposal_plot_input(),
+               plot5=mb_quality_plot_input(),
+               plot6=mb_rank_plot_input(),
+               plot7=mb_mean_plot_input(),
                plotlist=plots
   ))
 })

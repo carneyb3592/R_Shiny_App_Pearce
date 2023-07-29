@@ -91,18 +91,19 @@ rankings_plot_input <- reactive({
   J <- ncol(ratings)
   R <- ncol(rankings)
   for(i in 1:ncol(rankings)){if(all(is.na(rankings[,i]))){R <- i-1;break()}}
-  rankings_long <- melt(rankings)
+  rankings_long <- na.exclude(melt(rankings))
   names(rankings_long) <- c("Reviewer","Place","Proposal")
   rankings_long$Reviewer <- factor(rankings_long$Reviewer)
+  rankings_long$Proposal <- factor(rankings_long$Proposal,levels=1:J)
   rankings_long$Place <- factor(rankings_long$Place,
                                 levels = paste0(R:1),
                                 labels = toOrdinal(R:1))
   colfunc<-colorRampPalette(c("#def2f1","#3AAFA9"))
   ggplot(rankings_long,aes(Proposal,fill=Place)) +
     theme_bw(base_size=15)+geom_bar()+
-    ggtitle("Rankings by Proposal")+
-    scale_fill_manual(values=colfunc(R))+ylab("Count")+
-    theme(panel.grid = element_blank(),legend.position = "bottom") + scale_x_continuous(breaks = 1:J)
+    ggtitle("Rankings by Proposal",paste0(input$toyfile))+
+    scale_fill_manual(values=colfunc(R))+ylab("Count")+scale_x_discrete(drop=F)+
+    theme(panel.grid = element_blank(),legend.position = "bottom")
 })
 
 output$RankingsPlot <- renderPlotly({
@@ -117,7 +118,8 @@ output$RankingsPlot <- renderPlotly({
       
     )
   }
-  p %>% config(displayModeBar = F) %>% reverse_legend_labels()
+  p %>% config(displayModeBar = T) %>% reverse_legend_labels() %>%
+    layout(legend = list(orientation = "h",xanchor = "center",x = 0.5))
 })
 
 
@@ -148,8 +150,10 @@ inconsistencies_plot_input <- reactive({
   J <- ncol(ratings)
   R <- ncol(rankings)
   
-  consistency <- data.frame(Reviewer=1:nrow(ratings),Kendall=NA)
-  for(i in 1:nrow(ratings)){
+  which_rankings <- which(!apply(!is.na(rankings),1,function(pi){all(pi==FALSE)}))
+  consistency <- data.frame(Reviewer=which_rankings,Kendall=NA)
+  for(ind in seq_along(which_rankings)){
+    i <- which_rankings[ind]
     kendall <- 0
     for(j1 in 1:(J-1)){for(j2 in (j1+1):J){
       if(any(is.na(ratings[i,c(j1,j2)]))==FALSE){
@@ -165,20 +169,57 @@ inconsistencies_plot_input <- reactive({
       }
       
     }}
-    consistency[i,2] <- kendall
+    consistency[ind,2] <- kendall
   }
+  consistency$Reviewer <- factor(consistency$Reviewer,1:I)
   
-  ggplot(consistency,aes(x=Kendall))+
-    theme_bw(base_size=15)+geom_histogram(binwidth = 0.5)+
-    scale_x_continuous(limits=c(-.6,max(consistency$Kendall)+.6),
-                       breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
-    xlab("Number of Inconsistent Item Pairs")+ylab("Count")+
-    ggtitle("Inconsistency Between Ratings and Rankings")+
+  ggplot(consistency,aes(x=Reviewer,y=Kendall))+
+    theme_bw(base_size=15)+geom_bar(stat="identity")+
+    xlab("Reviewer")+ylab("Count")+
+    ggtitle("Reviewer-Level Inconsistency")+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
 })
 
 output$InconsistenciesPlot <- renderPlotly({
   g <- inconsistencies_plot_input()
+  p <- ggplotly(g)
+  p %>% config(displayModeBar = F)
+})
+
+### Inconsistencies Plot 2 #######################################################
+inconsistenciesproposal_plot_input <- reactive({
+  rankings <- reactive_data$Rankings
+  ratings <- reactive_data$Ratings
+  M <- reactive_data$M
+  
+  I <- nrow(ratings)
+  J <- ncol(ratings)
+  R <- ncol(rankings)
+  
+  consistency_proposals <- data.frame(Proposal=1:J,Kendall=NA)
+  ranks <- matrix(unlist(lapply(1:J,function(j){
+    unlist(apply(rankings,1,function(pi){ifelse(j%in%pi,which(pi==j),J+1)}))})),ncol=J)
+  
+  for(j in 1:J){
+    kendall <- 0
+    for(j2 in setdiff(1:J,j)){
+      true_ranks <- which(ranks[,j] != ranks[,j2])
+      kendall <- kendall + sum((ranks[true_ranks,j] < ranks[true_ranks,j2] & ratings[true_ranks,j] > ratings[true_ranks,j2]) | (ranks[true_ranks,j] > ranks[true_ranks,j2] & ratings[true_ranks,j] < ratings[true_ranks,j2]),na.rm=T)
+    }
+    consistency_proposals[j,2] <- kendall
+  }
+  consistency_proposals$Proposal <- as.factor(consistency_proposals$Proposal)
+  
+  ggplot(consistency_proposals,aes(x=Proposal,y=Kendall))+
+    theme_bw(base_size=15)+geom_bar(stat="identity")+
+    ylim(c(0,max(consistency_proposals$Kendall,1)))+
+    xlab("Proposal")+ylab("Count")+
+    ggtitle("Proposal-Level Inconsistency")+
+    theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
+})
+
+output$InconsistenciesProposalPlot <- renderPlotly({
+  g <- inconsistenciesproposal_plot_input()
   p <- ggplotly(g)
   p %>% config(displayModeBar = F)
 })
@@ -223,6 +264,20 @@ output$downloadInconsistencies <- downloadHandler(
   content = function(file){
     ggsave(file,
            plot = inconsistencies_plot_input(),
+           device = "png",
+           width = 1920,
+           height = 1080,
+           units = "px")
+  }
+)
+
+output$downloadInconsistenciesProposal <- downloadHandler(
+  filename = function() {
+    paste('inconsistenciesproposalplot.png', sep='')
+  },
+  content = function(file){
+    ggsave(file,
+           plot = inconsistenciesproposal_plot_input(),
            device = "png",
            width = 1920,
            height = 1080,

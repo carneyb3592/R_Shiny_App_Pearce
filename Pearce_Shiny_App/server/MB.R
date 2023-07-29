@@ -103,6 +103,7 @@ mb_quality_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_p$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylim(c(0,1))+ylab("Integrated Score")+
+      ggtitle(paste0("Estimated Proposal Quality (",as.numeric(input$confidencelevel)*100,"% CI)"))+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   } else {
     results_p <- reactive_data$results_p
@@ -111,6 +112,7 @@ mb_quality_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_p$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylim(c(0,1))+ylab("Integrated Score")+
+      ggtitle("Estimated Proposal Quality")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   }
   g
@@ -127,8 +129,8 @@ output$MallowsBinomialQuality <- renderPlotly({
       p$x$data[[i]]$text <- paste0(
         "Proposal ", p$x$data[[i]]$x,
         "<br />Integrated Score: ", round(p$x$data[[i]]$y, digits = 3),
-        "<br />95% CI Lower Limit: ",round(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus, digits = 3),
-        "<br />95% CI Upper Limit: ",round(p$x$data[[i]]$y+p$x$data[[i]]$error_y$array, digits = 3)
+        "<br />",as.numeric(input$confidencelevel)*100,"% CI Lower Limit: ",round(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus, digits = 3),
+        "<br />",as.numeric(input$confidencelevel)*100,"% CI Upper Limit: ",round(p$x$data[[i]]$y+p$x$data[[i]]$error_y$array, digits = 3)
       )
     }
   } else {
@@ -174,6 +176,7 @@ mb_rank_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylab("Estimated Rank")+
+      ggtitle(paste0("Estimated Proposal Rank (",as.numeric(input$confidencelevel)*100,"% CI)"))+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   } else {
     point_estimate <- reactive_data$point_estimate
@@ -187,6 +190,7 @@ mb_rank_plot_input <- reactive({
       scale_x_continuous(limits=c(.4,max(results_rankCI$Proposal)+.6),
                          breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ylab("Estimated Rank")+
+      ggtitle("Estimated Proposal Rank")+
       theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
   }
   g
@@ -201,8 +205,8 @@ output$MallowsBinomialRank <- renderPlotly({
       p$x$data[[i]]$text <- paste0(
         "Proposal ", p$x$data[[i]]$x,
         "<br />Rank Estimate: ", round(p$x$data[[i]]$y, digits = 3),
-        "<br />95% CI Lower Limit: ",round(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus, digits = 3),
-        "<br />95% CI Upper Limit: ",round(p$x$data[[i]]$y+p$x$data[[i]]$error_y$array, digits = 3)
+        "<br />",as.numeric(input$confidencelevel)*100,"% CI Lower Limit: ",round(p$x$data[[i]]$y-p$x$data[[i]]$error_y$arrayminus, digits = 3),
+        "<br />",as.numeric(input$confidencelevel)*100,"% CI Upper Limit: ",round(p$x$data[[i]]$y+p$x$data[[i]]$error_y$array, digits = 3)
       )
     }
   } else {

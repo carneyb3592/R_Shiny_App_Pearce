@@ -8,6 +8,7 @@ params:
   plot4: NA
   plot5: NA
   plot6: NA
+  plot7: NA
   plotlist: NA
 ---
 
@@ -16,37 +17,42 @@ This report contains the user-selected results figures from the Peer Review with
 ```{r echo=FALSE, comment=NA, warnings=FALSE,message=FALSE}
 if("RateBP" %in% params$plotlist){
   plot(params$plot1)
-  cat("This plot displays side-by-side boxplots of ratings assigned to each proposal.\nThe x-axis displays proposals in numerical order and the y-axis displays ratings from best to worst.")
+  print("This plot displays side-by-side boxplots of ratings assigned to each proposal. The x-axis displays proposals in numerical order and the y-axis displays ratings from best to worst.")
 }
 
 
 if("RankBP" %in% params$plotlist){
   plot(params$plot2)
-  cat("This plot displays stacked barcharts of the ranks assigned to each proposal.\nThe x-axis displays proposals in   numerical order and the y-axis displays counts.\nDifferent rank levels are indicated using colors.")
+  print("This plot displays stacked barcharts of the ranks assigned to each proposal. The x-axis displays proposals in numerical order and the y-axis displays counts. Different rank levels are indicated using colors.")
 }
 
 
 if("Incon" %in% params$plotlist){
   plot(params$plot3)
-  cat("This plot displays a histogram of reviewer-level inconsistencies. Inconsistency \n is defined as the total number of unique object pairs in which their order \n in the judge's ranking does not the order of their scores. We do not count pairs \n in which the order of objects cannot be inferred based on ratings or rankings (e.g., \ndue to missing data or rating ties). A value of 0 indicates a judge whose \nratings were internally consistent with his/her ranking.")
+  print("This plot displays a histogram of reviewer-level inconsistencies. Inconsistency is defined as the total number of unique object pairs in which their order in the judge's ranking does not the order of their scores. We do not count pairs in which the order of objects cannot be inferred based on ratings or rankings (e.g., due to missing data or rating ties). A value of 0 indicates a judge whose ratings were internally consistent with his/her ranking.")
+}
+
+if("InconProp" %in% params$plotlist){
+  plot(params$plot4)
+  print("This plot displays a histogram of proposal-level inconsistencies. Inconsistency is defined as the total number of unique objects in which their order differs between rankings and ratings, summed across all judges. As before, we do not count pairs in which the order of objects cannot be inferred based on ratings or rankings (e.g., due to missing data or rating ties). ")
 }
 
 
 if("MBQual" %in% params$plotlist){
-  plot(params$plot4)
-  cat("This plot displays estimates of proposal quality on the unit interval, based on the \nMallows-Binomial model. Here, estimated proposal quality is identical to the 'integrated score' \nof the proposal, as defined in Gallo et al. (2023).")
+  plot(params$plot5)
+  print("This plot displays estimates of proposal quality on the unit interval, based on the Mallows-Binomial model. Here, estimated proposal quality is identical to the 'integrated score' of the proposal, as defined in Gallo et al. (2023).")
 }
 
 
 if("MBRank" %in% params$plotlist){
-  plot(params$plot5)
-  cat("This plot displays estimates of the overall proposal rank, based on the Mallows-Binomial model.")
+  plot(params$plot6)
+  print("This plot displays estimates of the overall proposal rank, based on the Mallows-Binomial model.")
 }
 
 
 if("MBMean" %in% params$plotlist){
-  plot(params$plot6)
-  cat("This plot allows for direct comparison of estimated ranks by proposal between the \nMallows-Binomial model (x-axis) and the ranks based solely on ordering proposals by their \nmean rating (y-axis). The dotted line on the main diagonal represents equivalent results\n between models.")
+  plot(params$plot7)
+  print("This plot allows for direct comparison of estimated ranks by proposal between the Mallows-Binomial model (x-axis) and the ranks based solely on ordering proposals by their mean rating (y-axis). The dotted line on the main diagonal represents equivalent results between models.")
 }
 
 

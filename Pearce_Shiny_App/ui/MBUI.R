@@ -73,7 +73,7 @@ MBUI <- tabPanel("Mallows Binomial",
                                  p("The first plot displays estimates of proposal quality on the unit interval, 
                                 based on the Mallows-Binomial model. Here, estimated 
                                 proposal quality is identical to the 'integrated score' of the proposal, as defined in",
-                                   a(href="https://www.researchsquare.com/article/rs-2198949/v1","Gallo et al. (2023)."),
+                                   a(href="https://researchintegrityjournal.biomedcentral.com/articles/10.1186/s41073-023-00131-7","Gallo et al. (2023)."),
                                    "Hover over the plot for additional details.")
                                ),
                                mainPanel(
