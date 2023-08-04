@@ -237,11 +237,13 @@ mb_mean_plot_input <- reactive({
                                    MeanRatings=rank(apply(ratings,2,function(x){mean(x,na.rm=TRUE)}),ties.method="average"),
                                    MallowsBinomial=point_estimate$rank)
   ggplot(results_comparison,aes(MallowsBinomial,MeanRatings,label=Proposal))+
-    theme_bw(base_size=15)+geom_abline(slope=1,intercept=0,lty=2,color="gray")+
-    geom_point(size=2)+
+    theme_bw(base_size=15)+geom_point(size=2)+
+    geom_abline(slope=1,intercept=0,lty=2,color="red")+
+    geom_abline(slope=1,intercept=1,lty=2,color="gray")+
+    geom_abline(slope=1,intercept=-1,lty=2,color="gray")+
     geom_label_repel(min.segment.length = 0,force=J,box.padding = .5,point.padding = 0)+
     labs(x="Rank based on Mallows-Binomial",y="Ranks based on Mean Ratings",
-         title="Proposals by Rank based on Mallows-Binomial vs. Mean Ratings")+
+         title="Mallows-Binomial vs. Mean Ratings")+
     xlim(c(0,J+1))+ylim(c(0,J+1))+
     theme(panel.grid.minor = element_blank())
   
@@ -258,14 +260,14 @@ output$MallowsBinomialMean <- renderPlot({
 ### Warnings Text ##############################################################
 output$EstimationWarningText <- renderText({
   if(input$MBEstimationMethod == "exact"){
-    HTML("<p style='color:red;'> (Warning: Running exact estimation may be slow.)</p>")
+    HTML("<p style='color:red;'> Warning: Exact estimation may be slow, especially when there are >10 proposals. </p>")
   } else {
     HTML("")
   }
 })
 output$CIWarningText <- renderText({
   if(input$CI_Included == "yes"){
-    HTML("<p style='color:red;'> (Warning: Bootstrapped confidence intervals may be slow.)</p>")
+    HTML("<p style='color:red;'> Warning: Confidence intervals require bootstrapping and thus may be slow.</p>")
   } else {
     HTML("")
   }

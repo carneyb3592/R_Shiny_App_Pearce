@@ -172,9 +172,12 @@ inconsistencies_plot_input <- reactive({
     consistency[ind,2] <- kendall
   }
   consistency$Reviewer <- factor(consistency$Reviewer,1:I)
+  #consistency$Kendall[consistency$Kendall==0] <- 0.001
   
   ggplot(consistency,aes(x=Reviewer,y=Kendall))+
-    theme_bw(base_size=15)+geom_bar(stat="identity")+
+    theme_bw(base_size=15)+geom_bar(stat="identity",color="black")+
+    expand_limits(y = c(-.2,max(consistency$Kendall+.2,1)))+
+    scale_y_continuous(breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
     xlab("Reviewer")+ylab("Count")+
     ggtitle("Reviewer-Level Inconsistency")+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
@@ -209,10 +212,12 @@ inconsistenciesproposal_plot_input <- reactive({
     consistency_proposals[j,2] <- kendall
   }
   consistency_proposals$Proposal <- as.factor(consistency_proposals$Proposal)
+  #consistency_proposals$Kendall[consistency_proposals$Kendall==0] <- 0.001
   
   ggplot(consistency_proposals,aes(x=Proposal,y=Kendall))+
-    theme_bw(base_size=15)+geom_bar(stat="identity")+
-    ylim(c(0,max(consistency_proposals$Kendall,1)))+
+    theme_bw(base_size=15)+geom_bar(stat="identity",color="black")+
+    expand_limits(y = c(-.2,max(consistency_proposals$Kendall+.2,1)))+
+    scale_y_continuous(breaks=function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
     xlab("Proposal")+ylab("Count")+
     ggtitle("Proposal-Level Inconsistency")+
     theme(panel.grid.major.x = element_blank(),panel.grid.minor.y = element_blank())
@@ -229,6 +234,7 @@ output$InconsistenciesProposalPlot <- renderPlotly({
 
 
 ###DOWNLOAD FUNCTIONS###########################################################
+
 
 output$downloadRatings <- downloadHandler(
   filename = function() {
@@ -288,6 +294,63 @@ output$downloadInconsistenciesProposal <- downloadHandler(
 
 
 ### Data Description ###########################################################
+output$DataName1 <- reactive({
+  selectedData <- input$toyfile
+  if(csvdata_status$uploaded == 0){
+    text <- switch (input$toyfile,
+                    ToyData1 = "Current Data Source: Toy Data 1",
+                    ToyData2 = "Current Data Source: Toy Data 2",
+                    ToyData3 = "Current Data Source: Toy Data 3",
+                    AIBS = "Current Data Source: AIBS"
+    )
+  }else{
+    text <- "Current Data Source: User Upload"
+  }
+  paste0("<b>",text,"</b>")
+})
+output$DataName2 <- reactive({
+  selectedData <- input$toyfile
+  if(csvdata_status$uploaded == 0){
+    text <- switch (input$toyfile,
+                    ToyData1 = "Current Data Source: Toy Data 1",
+                    ToyData2 = "Current Data Source: Toy Data 2",
+                    ToyData3 = "Current Data Source: Toy Data 3",
+                    AIBS = "Current Data Source: AIBS"
+    )
+  }else{
+    text <- "Current Data Source: User Upload"
+  }
+  paste0("<b>",text,"</b>")
+})
+output$DataName3 <- reactive({
+  selectedData <- input$toyfile
+  if(csvdata_status$uploaded == 0){
+    text <- switch (input$toyfile,
+                    ToyData1 = "Current Data Source: Toy Data 1",
+                    ToyData2 = "Current Data Source: Toy Data 2",
+                    ToyData3 = "Current Data Source: Toy Data 3",
+                    AIBS = "Current Data Source: AIBS"
+    )
+  }else{
+    text <- "Current Data Source: User Upload"
+  }
+  paste0("<b>",text,"</b>")
+})
+output$DataName4 <- reactive({
+  selectedData <- input$toyfile
+  if(csvdata_status$uploaded == 0){
+    text <- switch (input$toyfile,
+                    ToyData1 = "Current Data Source: Toy Data 1",
+                    ToyData2 = "Current Data Source: Toy Data 2",
+                    ToyData3 = "Current Data Source: Toy Data 3",
+                    AIBS = "Current Data Source: AIBS"
+    )
+  }else{
+    text <- "Current Data Source: User Upload"
+  }
+  paste0("<b>",text,"</b>")
+})
+
 output$ToyDataDescription <- reactive({
   selectedData <- input$toyfile
   text <- switch (input$toyfile,
@@ -302,6 +365,7 @@ output$ToyDataDescription <- reactive({
     AIBS = "AIBS contains real grant panel review data from the American Institute of Biological
     Sciences (AIBS), in which 12 reviewers assessed 28 proposals using top-6 partial rankings and 
     a 41-point rating scale. The data set demonstrates the ability of Mallows-Binomial to estimate 
-    overall preferences with uncertainty, even with partial rankings, missing data, and conflicts of interest."
+    overall preferences with uncertainty, even with partial rankings, missing data, and conflicts 
+    of interest."
   )
 })

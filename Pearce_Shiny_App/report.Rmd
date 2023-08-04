@@ -12,48 +12,54 @@ params:
   plotlist: NA
 ---
 
-This report contains the user-selected results figures from the Peer Review with Rankings and Ratings RShiny application.
-
-```{r echo=FALSE, comment=NA, warnings=FALSE,message=FALSE}
-if("RateBP" %in% params$plotlist){
-  plot(params$plot1)
-  print("This plot displays side-by-side boxplots of ratings assigned to each proposal. The x-axis displays proposals in numerical order and the y-axis displays ratings from best to worst.")
-}
+This report contains the user-selected results figures from the Peer Review with Rankings and Ratings RShiny application. Each plot is displayed alongside a short description.
 
 
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
+if("RateBP" %in% params$plotlist){plot(params$plot1)}
+```
+`r if("RateBP" %in% params$plotlist){"The above plot displays side-by-side boxplots of ratings assigned to each proposal. The x-axis displays proposals in numerical order and the y-axis displays ratings from best to worst."}`
+
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
 if("RankBP" %in% params$plotlist){
   plot(params$plot2)
-  print("This plot displays stacked barcharts of the ranks assigned to each proposal. The x-axis displays proposals in numerical order and the y-axis displays counts. Different rank levels are indicated using colors.")
 }
+```
+`r if("RankBP" %in% params$plotlist){"The above plot displays stacked barcharts of the ranks assigned to each proposal. The x-axis displays proposals in numerical order and the y-axis displays counts. Different rank levels are indicated using colors."}`
 
-
-if("Incon" %in% params$plotlist){
-  plot(params$plot3)
-  print("This plot displays a histogram of reviewer-level inconsistencies. Inconsistency is defined as the total number of unique object pairs in which their order in the judge's ranking does not the order of their scores. We do not count pairs in which the order of objects cannot be inferred based on ratings or rankings (e.g., due to missing data or rating ties). A value of 0 indicates a judge whose ratings were internally consistent with his/her ranking.")
-}
-
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
 if("InconProp" %in% params$plotlist){
   plot(params$plot4)
-  print("This plot displays a histogram of proposal-level inconsistencies. Inconsistency is defined as the total number of unique objects in which their order differs between rankings and ratings, summed across all judges. As before, we do not count pairs in which the order of objects cannot be inferred based on ratings or rankings (e.g., due to missing data or rating ties). ")
 }
+```
+`r if("InconProp" %in% params$plotlist){"The above plot displays a histogram of proposal-level inconsistencies. displays counts of internal inconsistencies between ratings and rankings across reviewers. An inconsistency occurs when the order of two objects in a reviewer's ranking does not match the order implied by the reviewers ratings. We do not count pairs in which the order of objects cannot be inferred (e.g., due to missingness, ratings ties, conflicts of interest). The x-axis contains proposals in numerical order and the y-axis displays the total number of inconsistencies associated with each proposal across reviewers."}`
 
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
+if("Incon" %in% params$plotlist){
+  plot(params$plot3)
+}
+```
+`r if("Incon" %in% params$plotlist){"The above plot displays counts of internal inconsistencies between ratings and rankings by reviewer. An inconsistency occurs when the order of two objects in a reviewer's ranking does not match the order implied by the reviewers ratings. We do not count pairs in which the order of objects cannot be inferred (e.g., due to missingness, ratings ties, conflicts of interest). The x-axis contains reviewers in numerical order and the y-axis displays the total number of internal inconsistencies in each reviewer's data. A value of 0 indicates a judge whose ratings were internally consistent with his/her ranking."}`
 
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
 if("MBQual" %in% params$plotlist){
   plot(params$plot5)
-  print("This plot displays estimates of proposal quality on the unit interval, based on the Mallows-Binomial model. Here, estimated proposal quality is identical to the 'integrated score' of the proposal, as defined in Gallo et al. (2023).")
 }
-
-
-if("MBRank" %in% params$plotlist){
-  plot(params$plot6)
-  print("This plot displays estimates of the overall proposal rank, based on the Mallows-Binomial model.")
-}
-
-
-if("MBMean" %in% params$plotlist){
-  plot(params$plot7)
-  print("This plot allows for direct comparison of estimated ranks by proposal between the Mallows-Binomial model (x-axis) and the ranks based solely on ordering proposals by their mean rating (y-axis). The dotted line on the main diagonal represents equivalent results between models.")
-}
-
 
 ```
+`r if("MBQual" %in% params$plotlist){"The above plot displays estimates of proposal quality on the unit interval, based on the Mallows-Binomial model. Here, estimated proposal quality is identical to the 'integrated score' of the proposal, as defined in Gallo et al. (2023)."}`
+
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
+if("MBRank" %in% params$plotlist){
+  plot(params$plot6)
+}
+```
+`r if("MBRank" %in% params$plotlist){"The above plot displays estimates of proposals' overall ranks, based on the Mallows-Binomial model. Non-integer values occur when one or more proposals are tied for the same rank, which may occur when, for example, two proposals receive the same mean rating and identical sets of ranks."}`
+
+
+```{r echo=FALSE, comment=NA, warning=FALSE,message=FALSE}
+if("MBMean" %in% params$plotlist){
+  plot(params$plot7)
+}
+```
+`r if("MBMean" %in% params$plotlist){"The above plot allows for direct comparison of estimated ranks by proposal between the joint Mallows-Binomial model for rankings and ratings (x-axis), and a method based on ordering proposals by their mean rating (y-axis). The red dotted line on the main diagonal represents equivalent results between models, and the gray dotted lines indicate a difference of one rank place."}`
