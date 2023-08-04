@@ -1,0 +1,12 @@
+name: Peer_Review_with_Rankings_and_Ratings
+title: Peer_Review_with_Rankings_and_Ratings
+username: pearce790
+account: pearce790
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9553853
+bundleId:
+url: https://pearce790.shinyapps.io/Peer_Review_with_Rankings_and_Ratings/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

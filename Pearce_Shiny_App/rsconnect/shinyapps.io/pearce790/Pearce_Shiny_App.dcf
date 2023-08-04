@@ -1,0 +1,12 @@
+name: Pearce_Shiny_App
+title: Pearce_Shiny_App
+username: pearce790
+account: pearce790
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9553851
+bundleId:
+url: https://pearce790.shinyapps.io/Pearce_Shiny_App/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

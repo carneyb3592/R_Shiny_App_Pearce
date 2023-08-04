@@ -1,0 +1,12 @@
+name: PeerReview_rankrate
+title: PeerReview_rankrate
+username: pearce790
+account: pearce790
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9553866
+bundleId:
+url: https://pearce790.shinyapps.io/PeerReview_rankrate/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

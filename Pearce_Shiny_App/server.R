@@ -1,6 +1,6 @@
 ### Library Installs############################################################
 library(shiny)
-devtools::install_github("pearce790/rankrate")
+#devtools::install_github("pearce790/rankrate")
 library(rankrate)
 library(ggplot2)
 library(reshape2)
@@ -13,6 +13,15 @@ library(ggrepel)
 library(latexpdf)
 library(knitr)
 library(shinyalert)
+library(ggfun)
+library(ggimage)
+library(ggplotify)
+library(gridGraphics)
+library(hexSticker)
+library(hexbin)
+library(magick)
+library(showtext)
+library(showtextdb)
 
 # Define server logic
 function(input, output, session) {
