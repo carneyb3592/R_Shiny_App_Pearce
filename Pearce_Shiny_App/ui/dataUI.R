@@ -101,7 +101,7 @@ dataUI <- tabPanel("Data",
                                 column(
                                   2,
                                   radioButtons(
-                                    label = "Seperator",
+                                    label = "Separator",
                                     inputId = "RatingsFileDataSeperator",
                                     choices = c(
                                       "Comma" = ",",
@@ -131,7 +131,7 @@ dataUI <- tabPanel("Data",
                                 column(
                                   2,
                                   radioButtons(
-                                    label = "Seperator",
+                                    label = "Separator",
                                     inputId = "AssignmentsFileDataSeperator",
                                     choices = c(
                                       "Comma" = ",",
